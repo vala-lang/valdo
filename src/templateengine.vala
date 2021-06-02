@@ -114,7 +114,7 @@ namespace Valdo.TemplateEngine {
                     string variable_name = (!)match_info.fetch (1);
 
                     if (variable_name in substitutions) {
-                        result.append (substitutions[variable_name]);
+                        result.append (substitutions[variable_name].escape ().replace ("'", "\\'"));
                     } else {
                         warning ("could not substitute `${%s}` in %s - prepend a `$` if this was intentional",
                             variable_name, (!) template_file.get_path ());
