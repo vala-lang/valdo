@@ -139,7 +139,7 @@ namespace Valdo.TemplateEngine {
                 null
             );
             // create a new gitignore for meson and c files
-            project_dir.get_child (".gitignore").create (FileCreateFlags.NONE).write_all ("build/\n*.o".data, null);
+            project_dir.get_child (".gitignore").create (FileCreateFlags.NONE).write_all ("build/\n*~".data, null);
         } catch (Error e) {
             warning ("could not initialize a git repository - %s", e.message);
         }

@@ -1,0 +1,16 @@
+{
+    "description": "a starter GTK app",
+    "variables": {
+        "PROGRAM_NAME": {
+            "summary": "the name of the program",
+            "default": "gtkapp"
+        }
+    },
+    "inputs": [
+        "src/App.vala.in",
+        "src/MainWindow.vala.in",
+        "ui/resources.xml.in",
+        "meson.build.in",
+        "README.md.in"
+    ]
+}

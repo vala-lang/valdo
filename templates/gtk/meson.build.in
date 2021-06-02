@@ -1,0 +1,14 @@
+project('${PROJECT_NAME}', 'vala', 'c',
+  version: '${PROJECT_VERSION}')
+
+deps = [
+  dependency('gtk+-3.0')
+]
+
+subdir('src')
+subdir('ui')
+
+executable('${PROGRAM_NAME}',
+           [src, resources],
+           dependencies: deps,
+           vala_args: [resource_args])
