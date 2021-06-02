@@ -76,7 +76,7 @@ int main (string[] args) {
             if (user_input == null && variable.default == null) {
                 throw new Valdo.TemplateSubstitutionError.COULD_NOT_GET_VARIABLE_SUBSTITUTION (
                     "Error: %s was not specified",
-                    variable.name
+                    variable.summary
                 );
             }
 

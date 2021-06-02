@@ -81,6 +81,9 @@ namespace Valdo.TemplateEngine {
             var project_child = project_dir.resolve_relative_path (template_child_path_relative);
             var project_child_parentdir = project_child.get_parent ();
 
+            if (template_child_path_relative == "template.json")
+                continue;   // don't copy over template.json
+
             // create the parent directory of the file
             if (project_child_parentdir != null) {
                 DirUtils.create_with_parents ((!) (/* FIXME: non-null */ (!)project_child_parentdir).get_path (), 0755);
