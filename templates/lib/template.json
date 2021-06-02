@@ -1,0 +1,27 @@
+{
+    "description": "a bare library with minimal dependencies",
+    "variables": {
+        "PROJECT_SUMMARY": {
+            "summary": "a very short summary of the project",
+            "default": "a library that does awesome things"
+        },
+        "LIBRARY_NAME": {
+            "summary": "the name of the library",
+            "default": "mylib"
+        },
+        "API_NAMESPACE": {
+            "summary": "the API namespace",
+            "default": "MyLib"
+        },
+        "API_VERSION": {
+            "summary": "the API version",
+            "default": "0.1"
+        }
+    },
+    "inputs": [
+        "src/library.vala.in",
+        "src/meson.build.in",
+        "meson.build.in",
+        "README.md.in"
+    ]
+}

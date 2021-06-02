@@ -1,0 +1,2 @@
+option('enable_valadoc', type: 'boolean', value: true)
+
