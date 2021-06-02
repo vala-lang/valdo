@@ -1,0 +1,10 @@
+{
+    "description": "a bare app, with minimal dependencies",
+    "variables": {
+        "EXE_NAME": "the name of the executable"
+    },
+    "inputs": [
+        "meson.build.in",
+        "README.md.in"
+    ]
+}
