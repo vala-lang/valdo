@@ -46,6 +46,44 @@ int main (string[] args) {
         return 1;
     }
 
+    if (should_list) {
+        if (template_names.length != 0) {
+            with (stderr) {
+                printf ("Usage: %s TEMPLATE\n", args[0]);
+                printf ("Run %s -l to see a list of templates\n", args[0]);
+            }
+            return 1;
+        }
+
+        var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
+
+        try {
+            var enumerator = templates_dir.enumerate_children (
+                FileAttribute.ID_FILE,
+                FileQueryInfoFlags.NOFOLLOW_SYMLINKS);
+
+            var errors = new Array<Error> ();
+            FileInfo? finfo = null;
+            while ((finfo = enumerator.next_file ()) != null) {
+                unowned var template_name = /* FIXME: non-null */ ((!)finfo).get_name ();
+                try {
+                    var template = Valdo.Template.new_from_directory (File.new_build_filename (Config.TEMPLATES_DIR, template_name));
+                    stdout.printf ("%s - %s\n", template_name, template.description);
+                } catch (Error e) {
+                    errors.append_val (e);
+                }
+            }
+
+            for (var i = 0; i < errors.length; i++)
+                stderr.printf ("%s\n", errors.index (i).message);
+        } catch (Error e) {
+            stderr.printf ("%s\n", e.message);
+            stderr.printf ("could not enumerate templates.\n");
+            return 1;
+        }
+        return 0;
+    }
+
     if (template_names.length != 1) {
         with (stderr) {
             printf ("Usage: %s TEMPLATE\n", args[0]);
@@ -56,8 +94,18 @@ int main (string[] args) {
 
     // grab the template
     unowned string template_name = template_names[0];
+    var template_dir = File.new_build_filename (Config.TEMPLATES_DIR, template_name);
+
+    if (!template_dir.query_exists ()) {
+        with (stderr) {
+            printf ("`%s' is not an available template.\n", template_name);
+            printf ("Run %s -l to see a list of templates\n", args[0]);
+        }
+        return 1;
+    }
+
     try {
-        var template = Valdo.Template.new_from_directory (File.new_build_filename (Config.TEMPLATES_DIR, template_name));
+        var template = Valdo.Template.new_from_directory (template_dir);
         var substitutions = new HashTable<string, string> (GLib.str_hash, GLib.str_equal);
 
         stdout.printf ("creating %s\n", template.description);
