@@ -44,7 +44,7 @@ class Valdo.Template : Object, Json.Serializable {
      * Maps variable names to their description. The variable name is
      * recognized in the form `${VARIABLE}` inside a `.in` file.
      */
-    public HashTable<string, string> variables { get; protected set; }
+    public Array<Variable> variables { get; protected set; }
 
     /**
      * A list of input files (ending with `.in`) to be substituted.
@@ -73,15 +73,8 @@ class Valdo.Template : Object, Json.Serializable {
         if (!(object is Template))
             throw new TemplateError.DESERIALIZATION_FAILED ("%s: failed to deserialize", (!)path);
         
-        with ((Template)object) {
-            // add some default variables
-            variables["PROJECT_NAME"] = "the project name";
-            variables["PROJECT_VERSION"] = "the project version";
-
-            // set template directory
-            directory = template_dir;
-        }
-        
+        // set template directory
+        ((Template)object).directory = template_dir;
         return (Template)object;
     }
 
@@ -90,8 +83,9 @@ class Valdo.Template : Object, Json.Serializable {
                                                GLib.ParamSpec   pspec,
                                                Json.Node        property_node) {
         if (property_name == "variables") {
-            var mapping = new HashTable<string, string> (GLib.str_hash, GLib.str_equal);
-            value = mapping;
+            var variable_array = new Array<Variable> ();
+            var variable_set = new GenericSet<Variable> (Variable.hash, Variable.equal_to);
+            value = variable_array;
 
             if (property_node.get_node_type () != Json.NodeType.OBJECT) {
                 warning ("expected dictionary for '%s' property", property_name);
@@ -100,18 +94,19 @@ class Valdo.Template : Object, Json.Serializable {
 
             var object = (!) property_node.get_object ();
             /* FIXME: we can't inline `members` because of owned references and duplicating Lists */
-            var members = object.get_members (); 
-            for (unowned var node = members; node != null; node = /* FIXME: non-null */ ((!)node).next) {
-                var member_name = ((!)node).data; /* FIXME: non-null */
-                var member_value = (!) object.get_member (member_name);
+            object.foreach_member ((object, variable_name, member_value) => {
+                var variable_obj = Json.gobject_deserialize (typeof (Variable), member_value);
+                if (!(variable_obj is Variable))
+                    warning ("failed to deserialize variable %s", variable_name);
 
-                if (member_value.get_node_type () != Json.NodeType.VALUE || member_value.get_value_type () != typeof (string)) {
-                    warning ("could not interpret substitution variable: `%s' does not map to a string", member_name);
-                    continue;
-                }
+                ((Variable)variable_obj).name = variable_name;
+                variable_set.add ((Variable) variable_obj);
+                variable_array.append_val ((Variable) variable_obj);
+            });
 
-                mapping[member_name] = (!)member_value.get_string ();
-            }
+            variable_array.prepend_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1"));
+            variable_array.prepend_val (new Variable ("PROJECT_NAME", "the project name"));
+
             return true;
         } else if (property_name == "inputs") {
             var list = new GenericSet<string> (GLib.str_hash, GLib.str_equal);

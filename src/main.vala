@@ -61,19 +61,26 @@ int main (string[] args) {
         var substitutions = new HashTable<string, string> (GLib.str_hash, GLib.str_equal);
 
         stdout.printf ("creating %s\n", template.description);
-        foreach (var variable_name in template.variables.get_keys_as_array ()) {
-            string user_input;
+        for (var i = 0; i < template.variables.length; i++) {
+            unowned var variable = template.variables.index (i);
+            string? user_input = null;
 
-            // TODO: have default values
-            stdout.printf ("Enter %s: ", template.variables[variable_name]);
-            if (stdin.scanf ("%ms", out user_input) == FileStream.EOF) {
+            if (variable.default != null)
+                stdout.printf ("Enter %s [default=%s]: ", variable.summary, /* FIXME: non-null */(!)variable.default);
+            else
+                stdout.printf ("Enter %s: ", variable.summary);
+            user_input = stdin.read_line ();
+            if (user_input == "")
+                user_input = null;
+
+            if (user_input == null && variable.default == null) {
                 throw new Valdo.TemplateSubstitutionError.COULD_NOT_GET_VARIABLE_SUBSTITUTION (
                     "Error: %s was not specified",
-                    template.variables[variable_name]
+                    variable.name
                 );
             }
 
-            substitutions[variable_name] = user_input;
+            substitutions[variable.name] = /* FIXME: non-null */ user_input ?? (!)variable.default;
         }
 
         // now apply the template to the new directory

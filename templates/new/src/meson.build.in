@@ -2,7 +2,7 @@ sources = [
   'main.vala'
 ]
 
-executable('main',
+executable('${PROGRAM_NAME}',
   sources,
   dependencies: dependencies,
   install: true)

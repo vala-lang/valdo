@@ -1,9 +1,13 @@
 {
     "description": "a bare app, with minimal dependencies",
     "variables": {
-        "EXE_NAME": "the name of the executable"
+        "PROGRAM_NAME": {
+            "summary": "the name of the program",
+            "default": "main"
+        }
     },
     "inputs": [
+        "src/meson.build.in",
         "meson.build.in",
         "README.md.in"
     ]
