@@ -57,3 +57,5 @@ Your `template.json` may start off looking like:
 `"variables"` is a dictionary mapping each variable name to a short description. Having a default value for a variable is optional. There are at least two variables every template uses, `PROJECT_NAME` and `PROJECT_VERSION`, which you don't have to specify.
 
 For every variable listed, the template engine will substitute `${VARIABLE_NAME}` in each templated file listed in `"inputs"` after prompting the user. All other files in the template directory will be copied over unmodified. Templated files should end with `.in`.
+
+**Once you're done, submit a PR to https://github.com/Prince781/valdo**
