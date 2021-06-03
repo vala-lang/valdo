@@ -3,7 +3,8 @@
     "variables": {
         "PROGRAM_NAME": {
             "summary": "the name of the program",
-            "default": "gtkapp"
+            "default": "gtkapp",
+            "pattern": "^[[:word:]]+$"
         }
     },
     "inputs": [

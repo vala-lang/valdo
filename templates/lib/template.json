@@ -7,15 +7,18 @@
         },
         "LIBRARY_NAME": {
             "summary": "the name of the library",
-            "default": "mylib"
+            "default": "mylib",
+            "pattern": "^[[:word:]-]$"
         },
         "API_NAMESPACE": {
             "summary": "the API namespace",
-            "default": "MyLib"
+            "default": "MyLib",
+            "pattern": "^[A-Za-z][[:word:]]*?$"
         },
         "API_VERSION": {
             "summary": "the API version",
-            "default": "0.1"
+            "default": "0.1",
+            "pattern": "^\\d+(\\.\\d+)*$"
         }
     },
     "inputs": [

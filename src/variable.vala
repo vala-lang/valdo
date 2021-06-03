@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Represents a variable to be substituted in a template.
+ */
 class Valdo.Variable : Object, Json.Serializable {
     /**
      * The variable name to substitute
@@ -33,16 +36,24 @@ class Valdo.Variable : Object, Json.Serializable {
     public string? default { get; protected set; }
 
     /**
+     * The pattern that the string must match, or `null` if any string is
+     * accepted.
+     */
+    public string? pattern { get; protected set; }
+
+    /**
      * Creates a new variable for substitutions.
      *
      * @param name      the variable name
      * @param summary   a short description of the variable's meaning
      * @param default   the default value, or `null`
+     * @param pattern   the pattern that the string must match
      */
-    public Variable (string name, string summary, string? default = null) {
+    public Variable (string name, string summary, string? default = null, string? pattern = null) {
         this.name = name;
         this.summary = summary;
         this.default = default;
+        this.pattern = pattern;
     }
 
     public uint hash () {

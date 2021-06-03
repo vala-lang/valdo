@@ -104,8 +104,8 @@ class Valdo.Template : Object, Json.Serializable {
                 variable_array.append_val ((Variable) variable_obj);
             });
 
-            variable_array.prepend_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1"));
-            variable_array.prepend_val (new Variable ("PROJECT_NAME", "the project name"));
+            variable_array.prepend_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1", "^\\d+(\\.\\d+)*$"));
+            variable_array.prepend_val (new Variable ("PROJECT_NAME", "the project name", null, "^[^\\\\\\/#?'\"\\n]+$"));
 
             return true;
         } else if (property_name == "inputs") {

@@ -28,8 +28,9 @@ private const OptionEntry[] entries = {
     { (string)0 }
 };
 
-errordomain Valdo.TemplateSubstitutionError {
-    COULD_NOT_GET_VARIABLE_SUBSTITUTION
+errordomain Valdo.TemplateApplicationError {
+    EMPTY_VARIABLE,
+    USER_QUIT
 }
 
 int main (string[] args) {
@@ -111,7 +112,7 @@ int main (string[] args) {
         var substitutions = new HashTable<string, string> (GLib.str_hash, GLib.str_equal);
 
         stdout.printf ("creating %s\n", template.description);
-        for (var i = 0; i < template.variables.length; i++) {
+        for (var i = 0; i < template.variables.length;) {
             unowned var variable = template.variables.index (i);
             string? user_input = null;
 
@@ -119,18 +120,31 @@ int main (string[] args) {
                 stdout.printf ("Enter %s [default=%s]: ", variable.summary, /* FIXME: non-null */(!)variable.default);
             else
                 stdout.printf ("Enter %s: ", variable.summary);
-            user_input = stdin.read_line ();
-            if (user_input == "")
-                user_input = null;
 
-            if (user_input == null && variable.default == null) {
-                throw new Valdo.TemplateSubstitutionError.COULD_NOT_GET_VARIABLE_SUBSTITUTION (
+            if ((user_input = stdin.read_line ()) == null) {
+                throw new Valdo.TemplateApplicationError.USER_QUIT ("user has quit");
+            }
+
+            if (user_input == "" && variable.default == null) {
+                throw new Valdo.TemplateApplicationError.EMPTY_VARIABLE (
                     "Error: %s was not specified",
                     variable.summary
                 );
             }
 
-            substitutions[variable.name] = /* FIXME: non-null */ user_input ?? (!)variable.default;
+            if (user_input == "")
+                user_input = variable.default;
+
+            // verify input
+            if (variable.pattern != null) {
+                if (!new Regex (/* FIXME: non-null */(!)variable.pattern).match (/* FIXME: non-null */(!)user_input)) {
+                    stderr.printf ("Error: your entry must match the pattern: %s\n", /* FIXME: non-null */(!)variable.pattern);
+                    continue;
+                }
+            }
+
+            substitutions[variable.name] = /* FIXME: non-null */ (!)user_input;
+            i++;
         }
 
         // now apply the template to the new directory
@@ -142,7 +156,8 @@ int main (string[] args) {
             substitutions
         );
     } catch (Error e) {
-        stderr.printf ("%s\n", e.message);
+        if (!(e is Valdo.TemplateApplicationError.USER_QUIT))
+            stderr.printf ("%s\n", e.message);
         return 1;
     }
 
