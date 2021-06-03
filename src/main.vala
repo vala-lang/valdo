@@ -77,8 +77,10 @@ int main (string[] args) {
             for (var i = 0; i < errors.length; i++)
                 stderr.printf ("%s\n", errors.index (i).message);
         } catch (Error e) {
-            stderr.printf ("%s\n", e.message);
-            stderr.printf ("could not enumerate templates.\n");
+            with (stderr) {
+                printf ("%s\n", e.message);
+                printf ("could not enumerate templates.\n");
+            }
             return 1;
         }
         return 0;
@@ -141,6 +143,7 @@ int main (string[] args) {
         );
     } catch (Error e) {
         stderr.printf ("%s\n", e.message);
+        return 1;
     }
 
     return 0;
