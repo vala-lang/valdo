@@ -1,4 +1,4 @@
-# ${PROGRAM_NAME}
+# ${PROJECT_NAME}
 
 A shiny new GTK app.
 
@@ -7,5 +7,5 @@ A shiny new GTK app.
 ```Bash
 $ meson build
 $ ninja -C build
-$ build/app
+$ build/${PROGRAM_NAME}
 ```
