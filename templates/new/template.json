@@ -3,7 +3,7 @@
     "variables": {
         "PROGRAM_NAME": {
             "summary": "the name of the program",
-            "default": "main",
+            "default": "/${PROJECT_NAME}/^.*$/\\L\\g<0>\\E/\\W+/-/",
             "pattern": "^[[:word:]-]+$"
         }
     },

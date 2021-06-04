@@ -1,5 +1,5 @@
 {
-    "description": "a starter GTK app",
+    "description": "a starter GTK3 app",
     "variables": {
         "PROGRAM_NAME": {
             "summary": "the name of the program",

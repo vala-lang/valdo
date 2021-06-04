@@ -9,7 +9,7 @@ sources = files([
   'library.vala'
   ])
 
-lib${LIBRARY_NAME} = library('${LIBRARY_NAME}-${API_VERSION}',
+lib${LIBRARY_DEPNAME} = library('${LIBRARY_NAME}-${API_VERSION}',
   sources,
   vala_header: '${LIBRARY_NAME}.h',
   vala_vapi: '${LIBRARY_NAME}-' + API_VERSION + '.vapi',
@@ -36,12 +36,12 @@ if g_ir_compiler.found()
       meson.current_build_dir() / '${API_NAMESPACE}-' + API_VERSION + '.gir'
     ],
     output: '${API_NAMESPACE}-' + API_VERSION + '.typelib',
-    depends: lib${LIBRARY_NAME},
+    depends: lib${LIBRARY_DEPNAME},
     install: true,
     install_dir: join_paths(get_option('libdir'), 'girepository-1.0'))
 endif
 
-pkgconfig.generate(lib${LIBRARY_NAME},
+pkgconfig.generate(lib${LIBRARY_DEPNAME},
   subdirs: '${LIBRARY_NAME}-' + API_VERSION,
   version: API_VERSION,
   name: '${LIBRARY_NAME}',
@@ -51,7 +51,7 @@ pkgconfig.generate(lib${LIBRARY_NAME},
 
 if get_option('enable_valadoc')
   valadoc = find_program('valadoc')
-  ${LIBRARY_NAME}_docs = custom_target('${LIBRARY_NAME}_apidocs',
+  ${LIBRARY_DEPNAME}_docs = custom_target('${LIBRARY_NAME}_apidocs',
     input: sources,
     install: true,
     # FIXME: Installing to tmp, so the target will be built

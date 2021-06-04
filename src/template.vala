@@ -99,6 +99,14 @@ class Valdo.Template : Object, Json.Serializable {
                 if (!(variable_obj is Variable))
                     warning ("failed to deserialize variable %s", variable_name);
 
+                if (variable_obj is Variable) {
+                    var variable = (Variable)variable_obj;
+                    if (variable.auto && variable.default == null) {
+                        warning ("auto variable %s must have a default value", variable_name);
+                        return;
+                    }
+                }
+
                 ((Variable)variable_obj).name = variable_name;
                 variable_set.add ((Variable) variable_obj);
                 variable_array.append_val ((Variable) variable_obj);

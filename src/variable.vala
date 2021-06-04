@@ -33,13 +33,15 @@ class Valdo.Variable : Object, Json.Serializable {
     /**
      * The variable's default value, or `null`
      */
-    public string? default { get; protected set; }
+    public Value? default { get; protected set; }
 
     /**
      * The pattern that the string must match, or `null` if any string is
      * accepted.
      */
     public string? pattern { get; protected set; }
+
+    public bool auto { get; protected set; }
 
     /**
      * Creates a new variable for substitutions.
@@ -52,8 +54,26 @@ class Valdo.Variable : Object, Json.Serializable {
     public Variable (string name, string summary, string? default = null, string? pattern = null) {
         this.name = name;
         this.summary = summary;
-        this.default = default;
+        if (default != null)
+            this.default = new Value (/* FIXME: non-null */(!)default);
         this.pattern = pattern;
+    }
+
+    public override bool deserialize_property (string           property_name,
+                                               out GLib.Value   value,
+                                               GLib.ParamSpec   pspec,
+                                               Json.Node        property_node) {
+        if (property_name != "default")
+            return default_deserialize_property (property_name, out value, pspec, property_node);
+
+        if (property_node.get_value_type () != typeof (string)) {
+            value = "";
+            warning ("could not deserialize property '%s' from template file", property_name);
+            return true;
+        }
+
+        value = new Valdo.Value ((!)property_node.get_string ());
+        return true;
     }
 
     public uint hash () {

@@ -5,11 +5,6 @@
             "summary": "a very short summary of the project",
             "default": "a library that does awesome things"
         },
-        "LIBRARY_NAME": {
-            "summary": "the name of the library",
-            "default": "mylib",
-            "pattern": "^[[:word:]][[:word:]-]*$"
-        },
         "API_NAMESPACE": {
             "summary": "the API namespace",
             "default": "MyLib",
@@ -19,6 +14,16 @@
             "summary": "the API version",
             "default": "0.1",
             "pattern": "^\\d+(\\.\\d+)*$"
+        },
+        "LIBRARY_NAME": {
+            "summary": "the name of the library",
+            "default": "/${API_NAMESPACE}/\\w+/\\L\\g<0>\\E/",
+            "pattern": "^[[:word:]][[:word:]-]*$"
+        },
+        "LIBRARY_DEPNAME": {
+            "summary": "the name of the dependency variable for the library",
+            "default": "/${LIBRARY_NAME}/-/_/",
+            "auto": true
         }
     },
     "inputs": [

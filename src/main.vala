@@ -115,13 +115,21 @@ int main (string[] args) {
         for (var i = 0; i < template.variables.length;) {
             unowned var variable = template.variables.index (i);
             string? user_input = null;
+            string? default_value = null;
 
-            if (variable.default != null)
-                stdout.printf ("Enter %s [default=%s]: ", variable.summary, /* FIXME: non-null */(!)variable.default);
-            else
+            if (variable.default != null) {
+                default_value = /* FIXME: non-null */((!)variable.default).to_string (substitutions);
+                if (!variable.auto)
+                    stdout.printf ("Enter %s [default=%s]: ", variable.summary, (!)default_value);
+            } else {
                 stdout.printf ("Enter %s: ", variable.summary);
+            }
 
-            if ((user_input = stdin.read_line ()) == null) {
+            // (user_input == "") => user hit enter key, option for the default value
+            // (user_input == null) => user sent EOF
+            if (variable.auto) {
+                user_input = "";
+            } else if ((user_input = stdin.read_line ()) == null) {
                 throw new Valdo.TemplateApplicationError.USER_QUIT ("user has quit");
             }
 
@@ -133,7 +141,7 @@ int main (string[] args) {
             }
 
             if (user_input == "")
-                user_input = variable.default;
+                user_input = default_value;
 
             // verify input
             if (variable.pattern != null) {
