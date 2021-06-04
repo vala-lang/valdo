@@ -8,12 +8,12 @@
         "LIBRARY_NAME": {
             "summary": "the name of the library",
             "default": "mylib",
-            "pattern": "^[[:word:]-]$"
+            "pattern": "^[[:word:]][[:word:]-]*$"
         },
         "API_NAMESPACE": {
             "summary": "the API namespace",
             "default": "MyLib",
-            "pattern": "^[A-Za-z][[:word:]]*?$"
+            "pattern": "^[A-Za-z][[:word:]]*$"
         },
         "API_VERSION": {
             "summary": "the API version",
