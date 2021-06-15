@@ -140,16 +140,16 @@ int main (string[] args) {
                 );
             }
 
-            if (user_input == "")
+            if (user_input == "") {
                 user_input = default_value;
-
-            // verify input
-            if (variable.pattern != null) {
-                if (!new Regex (/* FIXME: non-null */(!)variable.pattern).match (/* FIXME: non-null */(!)user_input)) {
-                    stderr.printf ("Error: your entry must match the pattern: %s\n", /* FIXME: non-null */(!)variable.pattern);
-                    continue;
+            } else {
+                // verify input if user_input not empty
+                if (variable.pattern != null) {
+                    if (!new Regex (/* FIXME: non-null */(!)variable.pattern).match (/* FIXME: non-null */(!)user_input)) {
+                        stderr.printf ("Error: your entry must match the pattern: %s\n", /* FIXME: non-null */(!)variable.pattern);
+                        continue;
+                    }
                 }
-            }
 
             substitutions[variable.name] = /* FIXME: non-null */ (!)user_input;
             i++;
