@@ -72,7 +72,7 @@ class Valdo.Template : Object, Json.Serializable {
         var object = Json.gobject_deserialize (typeof (Template), /* FIXME: non-null */ (!)parser.get_root ());
         if (!(object is Template))
             throw new TemplateError.DESERIALIZATION_FAILED ("%s: failed to deserialize", (!)path);
-        
+
         // set template directory
         ((Template)object).directory = template_dir;
         return (Template)object;

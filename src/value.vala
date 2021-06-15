@@ -20,7 +20,7 @@ class Valdo.Value {
     /**
      * A pattern for patterns.
      */
-    const string pattern_pattern = "^\\/\\${(\\w+)}\\/((([^\\/]|\\\\\\/)+)\\/(([^\\/]|\\\\\\/)*)\\/)+$";
+    const string PATTERN_PATTERN = "^\\/\\${(\\w+)}\\/((([^\\/]|\\\\\\/)+)\\/(([^\\/]|\\\\\\/)*)\\/)+$";
 
     private string? referenced_var;
     private string[] patterns = {};
@@ -29,7 +29,7 @@ class Valdo.Value {
     public Value (string value_pattern) {
         try {
             MatchInfo match_info;
-            if (new Regex (pattern_pattern).match (value_pattern, 0, out match_info)) {
+            if (new Regex (PATTERN_PATTERN).match (value_pattern, 0, out match_info)) {
                 referenced_var = (!)match_info.fetch (1);
                 while (match_info.matches ()) {
                     patterns += (!)match_info.fetch (3);

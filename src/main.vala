@@ -25,7 +25,7 @@ private const OptionEntry[] entries = {
     { "list", 'l', 0, OptionArg.NONE, ref should_list, "list all templates", null },
     { OPTION_REMAINING, 0, 0, OptionArg.STRING_ARRAY, ref template_names, (string)0, "TEMPLATE" },
     // list terminator (we can't use `null` here, see https://gitlab.gnome.org/GNOME/vala/-/issues/1185)
-    { (string)0 }
+    { }
 };
 
 errordomain Valdo.TemplateApplicationError {

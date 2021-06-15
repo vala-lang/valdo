@@ -123,7 +123,7 @@ namespace Valdo.TemplateEngine {
 
                     return false;
                 });
-            
+
             // now write to the new file
             var project_file = template_files[template_file];
             project_file.create (FileCreateFlags.NONE).write_all (template_contents.data, null);
