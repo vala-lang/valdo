@@ -29,7 +29,7 @@ class Valdo.Value {
                 MatchInfo submatch_info;
                 int end_pos;
                 if (match_info.fetch_pos (0, null, out end_pos)) {
-                    var substring = value_pattern[end_pos:];
+                    var substring = value_pattern[end_pos:value_pattern.length];
                     if (new Regex ("\\/(([^\\/]|\\\\/)+)\\/(([^\\/]|\\\\/)+)")
                         .match (substring, 0, out submatch_info)) {
                         while (submatch_info.matches ()) {
