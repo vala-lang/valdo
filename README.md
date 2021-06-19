@@ -12,7 +12,7 @@ Create a new Vala project from a repository of templates.
 
 `valdo lib` - initializes a new library
 
-`valdo -l` - lists all available templates
+`valdo` - lists all available templates
 
 ## Creating a new a template
 

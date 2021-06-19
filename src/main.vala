@@ -16,13 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-private bool should_list;
-
 [CCode (array_length = false, array_null_terminated = true)]
 private string[] template_names;    // we only want one template, and we discard the rest
 
 private const OptionEntry[] entries = {
-    { "list", 'l', 0, OptionArg.NONE, ref should_list, "list all templates", null },
     { OPTION_REMAINING, 0, 0, OptionArg.STRING_ARRAY, ref template_names, (string)0, "TEMPLATE" },
     // list terminator (we can't use `null` here, see https://gitlab.gnome.org/GNOME/vala/-/issues/1185)
     { }
@@ -33,65 +30,61 @@ errordomain Valdo.TemplateApplicationError {
     USER_QUIT
 }
 
-int main (string[] args) {
+int list_templates (string[] args) {
+    var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
+    bool printed_header = false;
+
     try {
-        with (new OptionContext ("- create a Vala project from a template")) {
-            add_main_entries (entries, null);
-            parse (ref args);
+        var enumerator = templates_dir.enumerate_children (
+            FileAttribute.ID_FILE,
+            FileQueryInfoFlags.NOFOLLOW_SYMLINKS);
+
+        var errors = new Array<Error> ();
+        FileInfo? finfo = null;
+        while ((finfo = enumerator.next_file ()) != null) {
+            unowned var template_name = /* FIXME: non-null */ ((!)finfo).get_name ();
+            try {
+                var template = Valdo.Template.new_from_directory (File.new_build_filename (Config.TEMPLATES_DIR, template_name));
+                if (!printed_header) {
+                    stdout.printf ("Available templates:\n--------------------\n");
+                    printed_header = true;
+                }
+                stdout.printf ("%s - %s\n", template_name, template.description);
+            } catch (Error e) {
+                errors.append_val (e);
+            }
         }
+
+        for (var i = 0; i < errors.length; i++)
+            stderr.printf ("%s\n", errors.index (i).message);
     } catch (Error e) {
-        with (stderr) {
-            printf ("%s\n", e.message);
-            printf ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
-        }
+        stderr.printf ("%s\n", e.message);
+        stderr.printf ("could not enumerate templates.\n");
+        return 1;
+    }
+    if (!printed_header) {
+        stdout.printf ("There are no templates available.\n");
+    }
+    return 0;
+}
+
+int main (string[] args) {
+    var ctx = new OptionContext ("- create a Vala project from a template");
+    ctx.set_summary (@"Run $(args[0]) without any args to list all available templates");
+    ctx.set_description ("Report bugs to https://github.com/Prince781/valdo/issues");
+    try {
+        ctx.add_main_entries (entries, null);
+        ctx.parse (ref args);
+    } catch (Error e) {
+        stderr.printf ("%s\n", e.message);
+        stderr.printf ("Run '%s' to see a list of available templates.\n", args[0]);
         return 1;
     }
 
-    if (should_list) {
-        if (template_names.length != 0) {
-            with (stderr) {
-                printf ("Usage: %s TEMPLATE\n", args[0]);
-                printf ("Run %s -l to see a list of templates\n", args[0]);
-            }
-            return 1;
-        }
-
-        var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
-
-        try {
-            var enumerator = templates_dir.enumerate_children (
-                FileAttribute.ID_FILE,
-                FileQueryInfoFlags.NOFOLLOW_SYMLINKS);
-
-            var errors = new Array<Error> ();
-            FileInfo? finfo = null;
-            while ((finfo = enumerator.next_file ()) != null) {
-                unowned var template_name = /* FIXME: non-null */ ((!)finfo).get_name ();
-                try {
-                    var template = Valdo.Template.new_from_directory (File.new_build_filename (Config.TEMPLATES_DIR, template_name));
-                    stdout.printf ("%s - %s\n", template_name, template.description);
-                } catch (Error e) {
-                    errors.append_val (e);
-                }
-            }
-
-            for (var i = 0; i < errors.length; i++)
-                stderr.printf ("%s\n", errors.index (i).message);
-        } catch (Error e) {
-            with (stderr) {
-                printf ("%s\n", e.message);
-                printf ("could not enumerate templates.\n");
-            }
-            return 1;
-        }
-        return 0;
-    }
-
-    if (template_names.length != 1) {
-        with (stderr) {
-            printf ("Usage: %s TEMPLATE\n", args[0]);
-            printf ("Run %s -l to see a list of templates\n", args[0]);
-        }
+    if (template_names.length == 0) {
+        return list_templates (args);
+    } else if (template_names.length != 1) {
+        stderr.printf ("%s", ctx.get_help (false, null));
         return 1;
     }
 
@@ -100,10 +93,8 @@ int main (string[] args) {
     var template_dir = File.new_build_filename (Config.TEMPLATES_DIR, template_name);
 
     if (!template_dir.query_exists ()) {
-        with (stderr) {
-            printf ("`%s' is not an available template.\n", template_name);
-            printf ("Run %s -l to see a list of templates\n", args[0]);
-        }
+        stderr.printf ("Error: `%s' is not an available template.\n\n", template_name);
+        stderr.printf ("Run '%s' to see a list of available templates.\n", args[0]);
         return 1;
     }
 
