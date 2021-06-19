@@ -9,7 +9,7 @@ sources = files([
   'library.vala'
   ])
 
-lib${LIBRARY_DEPNAME} = library('${LIBRARY_NAME}-${API_VERSION}',
+lib${LIBRARY_DEPNAME} = library('${LIBRARY_NAME}-' + API_VERSION,
   sources,
   vala_header: '${LIBRARY_NAME}.h',
   vala_vapi: '${LIBRARY_NAME}-' + API_VERSION + '.vapi',
