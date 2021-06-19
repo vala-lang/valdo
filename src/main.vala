@@ -156,7 +156,7 @@ int main (string[] args) {
         }
 
         // now apply the template to the new directory
-        string project_name = substitutions["PROJECT_NAME"];
+        string project_name = substitutions["PROJECT_DIR"];
         Valdo.TemplateEngine.apply_template (
             template,
             File.new_for_path (Environment.get_current_dir ()),
