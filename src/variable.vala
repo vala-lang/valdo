@@ -63,17 +63,38 @@ class Valdo.Variable : Object, Json.Serializable {
                                                out GLib.Value   value,
                                                GLib.ParamSpec   pspec,
                                                Json.Node        property_node) {
-        if (property_name != "default")
-            return default_deserialize_property (property_name, out value, pspec, property_node);
+        if (property_name == "default") {
+            if (property_node.get_value_type () != typeof (string)) {
+                value = "";
+                warning ("could not deserialize property '%s' from template file", property_name);
+                return false;
+            }
 
-        if (property_node.get_value_type () != typeof (string)) {
-            value = "";
-            warning ("could not deserialize property '%s' from template file", property_name);
+            value = new Valdo.Value ((!)property_node.get_string ());
             return true;
-        }
+        } else if (property_name == "name" || property_name == "summary" || property_name == "pattern") {
+            // workaround for json-glib < 1.5.2 (Ubuntu 20.04 / eOS 6)
+            if (property_node.get_value_type () != typeof (string)) {
+                value = "";
+                warning ("could not deserialize property '%s' from template file", property_name);
+                return false;
+            }
 
-        value = new Valdo.Value ((!)property_node.get_string ());
-        return true;
+            value = (!)property_node.get_string ();
+            return true;
+        } else if (property_name == "auto") {
+            // workaround for json-glib < 1.5.2 (Ubuntu 20.04 / eOS 6)
+            if (property_node.get_value_type () != typeof (bool)) {
+                value = false;
+                warning ("could not deserialize property '%s' from tempalte file", property_name);
+                return true;
+            }
+
+            value = (!)property_node.get_boolean ();
+            return true;
+        } else {
+            return default_deserialize_property (property_name, out value, pspec, property_node);
+        }
     }
 
     public uint hash () {

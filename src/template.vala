@@ -130,13 +130,22 @@ class Valdo.Template : Object, Json.Serializable {
             var elements = array.get_elements ();
             /* FIXME: bindings for GLib.List<T> */
             for (unowned var node = elements; node != (void *)0; node = node.next) {
-                if (node.data.get_node_type () != Json.NodeType.VALUE || node.data.get_value_type () != typeof (string)) {
+                if (node.data.get_value_type () != typeof (string)) {
                     warning ("expected string in input array");
                     continue;
                 }
                 list.add ((!)node.data.get_string ());
             }
 
+            return true;
+        } else if (property_name == "description") {
+            // workaround for json-glib < 1.5.2 (Ubuntu 20.04 / eOS 6.0)
+            if (property_node.get_value_type () != typeof (string)) {
+                warning ("invalid type for property '%s'", property_name);
+                value = "";
+                return true;
+            }
+            value = (!)property_node.get_string ();
             return true;
         } else {
             return default_deserialize_property (property_name, out value, pspec, property_node);
