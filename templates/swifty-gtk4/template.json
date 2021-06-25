@@ -1,5 +1,5 @@
 {
-  "description": "an opinionated Gtk4 Application Template.",
+  "description": "an opinionated Gtk4 application template",
   "variables": {
     "PROGRAM_NAME": {
       "summary": "the name of the program",
@@ -7,12 +7,12 @@
       "pattern": "^[[:word:]-]+$"
     },
     "NAMESPACE": {
-      "summary": "namespace to use for the application",
+      "summary": "the namespace to use for the application",
       "default": "Gtk4App",
       "pattern": "^[A-Za-z_]\\w*$"
     },
     "APP_ID": {
-      "summary": "application ID",
+      "summary": "the application ID",
       "default": "com.github.author.example",
       "pattern": "^\\w+(\\.\\w+)*$"
     }
