@@ -1,32 +1,26 @@
 {
-  "description": "An opinionated Gtk4 Application Template.",
+  "description": "an opinionated Gtk4 Application Template.",
   "variables": {
     "PROGRAM_NAME": {
-      "summary": "The name of the program:",
+      "summary": "the name of the program",
       "default": "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/",
       "pattern": "^[[:word:]-]+$"
     },
-    "AUTHOR": {
-      "summary": "Author name:",
-      "default": "author",
-      "pattern": ""
-    },
     "NAMESPACE": {
-      "summary": "Namespace to use for the application:",
+      "summary": "namespace to use for the application",
       "default": "Gtk4App",
-      "pattern": ""
+      "pattern": "^[A-Za-z_]\\w*$"
     },
     "APP_ID": {
-      "summary": "Application ID:",
+      "summary": "application ID",
       "default": "com.github.author.example",
-      "pattern": ""
+      "pattern": "^\\w+(\\.\\w+)*$"
     }
   },
   "inputs": [
     "Sources/Main.vala.in",
     "Sources/MainWindow.vala.in",
     "Sources/meson.build.in",
-    "LICENSE.in",
     "meson.build.in",
     "README.md.in"
   ]
