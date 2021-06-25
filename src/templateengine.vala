@@ -36,10 +36,8 @@ namespace Valdo.TemplateEngine {
                         enumerator.get_child (/* FIXME: non-null */ (!)finfo),
                         cancellable,
                         found);
-                } else {
-                    // FIXME: non-null
-                    found[(!)finfo] = enumerator.get_child ((!)finfo);
                 }
+                found[(!)finfo] = enumerator.get_child ((!)finfo);
             }
         } catch (Error e) {
             warning ("could not get next file in dir %s", (!)dir.get_path ());
@@ -73,7 +71,8 @@ namespace Valdo.TemplateEngine {
         var files_list = list_files (template.directory);
         foreach (var template_child_info in files_list.get_keys_as_array ()) {
             var file_type = /* FIXME: non-null */ ((!)template_child_info).get_file_type ();
-            if (!(file_type == FileType.REGULAR || file_type == FileType.SYMBOLIC_LINK || file_type == FileType.SHORTCUT))
+            if (!(file_type == FileType.REGULAR || file_type == FileType.SYMBOLIC_LINK ||
+                  file_type == FileType.SHORTCUT || file_type == FileType.DIRECTORY))
                 continue;
 
             var template_child = files_list[template_child_info];
@@ -84,22 +83,27 @@ namespace Valdo.TemplateEngine {
             if (template_child_path_relative == "template.json")
                 continue;   // don't copy over template.json
 
-            // create the parent directory of the file
-            if (project_child_parentdir != null) {
-                DirUtils.create_with_parents ((!) (/* FIXME: non-null */ (!)project_child_parentdir).get_path (), 0755);
-            }
-
-            // if this is not a template file, just copy it over
-            if (!(template_child_path_relative in template.inputs)) {
-                // TODO: show file copy progress
-                template_child.copy (project_child, FileCopyFlags.NONE);
+            if (file_type == FileType.DIRECTORY) {
+                // create an empty directory
+                DirUtils.create_with_parents ((!) project_child.get_path (), 0755);
             } else {
-                // remove '.in' suffix if there is one
-                var project_child_path = (!)project_child.get_path ();
-                if (!project_child_path.has_suffix (".in"))
-                    warning ("file template %s should have a `.in` suffix", template_child_path_relative);
-                var renamed_project_child = File.new_for_path (/\.in$/.replace (project_child_path, -1, 0, ""));
-                template_files[template_child] = renamed_project_child;
+                // create the parent directory of the file
+                if (project_child_parentdir != null) {
+                    DirUtils.create_with_parents ((!) (/* FIXME: non-null */ (!)project_child_parentdir).get_path (), 0755);
+                }
+
+                // if this is not a template file, just copy it over
+                if (!(template_child_path_relative in template.inputs)) {
+                    // TODO: show file copy progress
+                    template_child.copy (project_child, FileCopyFlags.NONE);
+                } else {
+                    // remove '.in' suffix if there is one
+                    var project_child_path = (!)project_child.get_path ();
+                    if (!project_child_path.has_suffix (".in"))
+                        warning ("file template %s should have a `.in` suffix", template_child_path_relative);
+                    var renamed_project_child = File.new_for_path (/\.in$/.replace (project_child_path, -1, 0, ""));
+                    template_files[template_child] = renamed_project_child;
+                }
             }
         }
 

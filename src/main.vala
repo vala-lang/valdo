@@ -155,8 +155,10 @@ int main (string[] args) {
             substitutions
         );
     } catch (Error e) {
-        if (!(e is Valdo.TemplateApplicationError.USER_QUIT))
+        if (!(e is Valdo.TemplateApplicationError.USER_QUIT)) {
+            stderr.printf ("Applying template failed\n");
             stderr.printf ("%s\n", e.message);
+        }
         return 1;
     }
 
