@@ -84,8 +84,35 @@ namespace Valdo.TemplateEngine {
                 continue;   // don't copy over template.json
 
             if (file_type == FileType.DIRECTORY) {
-                // create an empty directory
-                DirUtils.create_with_parents ((!) project_child.get_path (), 0755);
+                // Test if Directroy name is a template
+                var folder_name = (!)project_child.get_basename ();
+                if (folder_name.has_prefix ("${")) {
+                    var substituted_name = /(?<!\$)\${(\w+)}/m
+                        .replace_eval (folder_name, folder_name.length, 0, 0, (match_info, result) => {
+                            string variable_name = (!)match_info.fetch (1);
+
+                            if (variable_name in substitutions) {
+                                result.append (substitutions[variable_name]);
+                            } else {
+                                warning ("could not substitute `${%s}` in %s - prepend a `$` if this was intentional",
+                                    variable_name, folder_name);
+                                result.append (variable_name);
+                            }
+
+                            return false;
+                        });
+                    
+                    // build the substituted dir name
+                    var parent_dir = (!)project_child.get_parent ();
+                    var dir_name = (!)parent_dir.get_path ();
+                    var new_name = dir_name + "//" + substituted_name;
+
+                    DirUtils.create_with_parents (new_name, 0755);
+                } else {
+                    // create an empty directory
+                    DirUtils.create_with_parents ((!) project_child.get_path (), 0755);
+                }
+
             } else {
                 // create the parent directory of the file
                 if (project_child_parentdir != null) {
