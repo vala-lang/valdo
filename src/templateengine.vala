@@ -77,11 +77,28 @@ namespace Valdo.TemplateEngine {
 
             var template_child = files_list[template_child_info];
             var template_child_path_relative = (!)template.directory.get_relative_path (template_child);
-            var project_child = project_dir.resolve_relative_path (template_child_path_relative);
-            var project_child_parentdir = project_child.get_parent ();
 
             if (template_child_path_relative == "template.json")
                 continue;   // don't copy over template.json
+
+            // substitute path name
+            var project_child_path_relative = /(?<!\$)\${(\w+)}/m
+                .replace_eval (template_child_path_relative, template_child_path_relative.length, 0, 0, (match_info, result) => {
+                    string variable_name = (!)match_info.fetch (1);
+
+                    if (variable_name in substitutions) {
+                        result.append (substitutions[variable_name]);
+                    } else {
+                        warning ("could not substitute `${%s}` in %s - prepend a `$` if this was intentional",
+                                 variable_name, template_child_path_relative);
+                        result.append (variable_name);
+                    }
+
+                    return false;
+                });
+
+            var project_child = project_dir.resolve_relative_path (project_child_path_relative);
+            var project_child_parentdir = project_child.get_parent ();
 
             if (file_type == FileType.DIRECTORY) {
                 // create an empty directory
