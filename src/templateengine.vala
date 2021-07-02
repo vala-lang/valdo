@@ -86,7 +86,7 @@ namespace Valdo.TemplateEngine {
             if (file_type == FileType.DIRECTORY) {
                 // Test if Directroy name is a template
                 var folder_name = (!)project_child.get_basename ();
-                if (folder_name.has_prefix ("${")) {
+                if (folder_name.contains ("${")) {
                     var substituted_name = /(?<!\$)\${(\w+)}/m
                         .replace_eval (folder_name, folder_name.length, 0, 0, (match_info, result) => {
                             string variable_name = (!)match_info.fetch (1);
