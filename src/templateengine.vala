@@ -105,7 +105,7 @@ namespace Valdo.TemplateEngine {
                     // build the substituted dir name
                     var parent_dir = (!)project_child.get_parent ();
                     var dir_name = (!)parent_dir.get_path ();
-                    var new_name = dir_name + "//" + substituted_name;
+                    var new_name = Path.build_filename (dir_name, substituted_name);
 
                     DirUtils.create_with_parents (new_name, 0755);
                 } else {
