@@ -85,8 +85,7 @@ namespace Valdo.TemplateEngine {
 
             if (file_type == FileType.DIRECTORY) {
                 // Test if Directroy name is a template
-                var folder_name = (!)project_child.get_basename ();
-                if (folder_name.contains ("${")) {
+
                     var substituted_name = /(?<!\$)\${(\w+)}/m
                         .replace_eval (folder_name, folder_name.length, 0, 0, (match_info, result) => {
                             string variable_name = (!)match_info.fetch (1);
@@ -108,11 +107,6 @@ namespace Valdo.TemplateEngine {
                     var new_name = Path.build_filename (dir_name, substituted_name);
 
                     DirUtils.create_with_parents (new_name, 0755);
-                } else {
-                    // create an empty directory
-                    DirUtils.create_with_parents ((!) project_child.get_path (), 0755);
-                }
-
             } else {
                 // create the parent directory of the file
                 if (project_child_parentdir != null) {
