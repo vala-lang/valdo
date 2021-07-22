@@ -19,7 +19,10 @@
 [CCode (array_length = false, array_null_terminated = true)]
 private string[] template_names;    // we only want one template, and we discard the rest
 
+private bool version;
+
 private const OptionEntry[] entries = {
+    { "version", 'V', 0, OptionArg.NONE, ref version, "Output version", null },
     { OPTION_REMAINING, 0, 0, OptionArg.STRING_ARRAY, ref template_names, (string)0, "TEMPLATE" },
     // list terminator (we can't use `null` here, see https://gitlab.gnome.org/GNOME/vala/-/issues/1185)
     { }
@@ -81,9 +84,16 @@ int main (string[] args) {
         return 1;
     }
 
+    if (version) {
+        stdout.printf ("valdo %s\n", Config.PROJECT_VERSION);
+        return 0;
+    }
+
     if (template_names.length == 0) {
         return list_templates (args);
-    } else if (template_names.length != 1) {
+    }
+
+    if (template_names.length != 1) {
         stderr.printf ("%s", ctx.get_help (false, null));
         return 1;
     }

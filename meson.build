@@ -1,5 +1,5 @@
 project('valdo', 'vala', 'c',
-  version: '0.0.1',
+  version: '2021.07.22',
   license: 'LGPL-2.1-only')
 
 valac = meson.get_compiler('vala')
