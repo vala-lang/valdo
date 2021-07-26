@@ -43,7 +43,9 @@ int list_templates (string[] args) {
             FileQueryInfoFlags.NOFOLLOW_SYMLINKS);
 
         var errors = new Array<Error> ();
+        var templates = new HashTable<string, string> (str_hash, str_equal);
         FileInfo? finfo = null;
+        int max_template_name_len = -1;
         while ((finfo = enumerator.next_file ()) != null) {
             unowned var template_name = /* FIXME: non-null */ ((!)finfo).get_name ();
             try {
@@ -52,11 +54,16 @@ int list_templates (string[] args) {
                     stdout.printf ("Available templates:\n--------------------\n");
                     printed_header = true;
                 }
-                stdout.printf ("%s - %s\n", template_name, template.description);
+                templates[template_name] = template.description;
+                if (max_template_name_len < template_name.length)
+                    max_template_name_len = template_name.length;
             } catch (Error e) {
                 errors.append_val (e);
             }
         }
+
+        foreach (unowned var name in templates.get_keys_as_array ())
+            print ("%s%s - %s\n", name, string.nfill (max_template_name_len - name.length, ' '), templates[name]);
 
         for (var i = 0; i < errors.length; i++)
             stderr.printf ("%s\n", errors.index (i).message);
