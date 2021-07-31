@@ -29,7 +29,6 @@ private const OptionEntry[] entries = {
 };
 
 errordomain Valdo.TemplateApplicationError {
-    EMPTY_VARIABLE,
     USER_QUIT
 }
 
@@ -120,47 +119,51 @@ int main (string[] args) {
         var substitutions = new HashTable<string, string> (GLib.str_hash, GLib.str_equal);
 
         stdout.printf ("creating %s\n", template.description);
-        for (var i = 0; i < template.variables.length;) {
+
+        for (var i = 0; i < template.variables.length; i++) {
             unowned var variable = template.variables.index (i);
             string? user_input = null;
             string? default_value = null;
+            bool input_verified = false;
 
-            if (variable.default != null) {
-                default_value = /* FIXME: non-null */((!)variable.default).to_string (substitutions);
-                if (!variable.auto)
-                    stdout.printf ("Enter %s [default=%s]: ", variable.summary, (!)default_value);
-            } else {
-                stdout.printf ("Enter %s: ", variable.summary);
-            }
-
-            // (user_input == "") => user hit enter key, option for the default value
-            // (user_input == null) => user sent EOF
-            if (variable.auto) {
-                user_input = "";
-            } else if ((user_input = stdin.read_line ()) == null) {
-                throw new Valdo.TemplateApplicationError.USER_QUIT ("user has quit");
-            }
-
-            if (user_input == "" && variable.default == null) {
-                throw new Valdo.TemplateApplicationError.EMPTY_VARIABLE (
-                    "Error: %s was not specified",
-                    variable.summary
-                );
-            }
-
-            if (user_input == "")
-                user_input = default_value;
-
-            // verify input
-            if (variable.pattern != null) {
-                if (!new Regex (/* FIXME: non-null */(!)variable.pattern).match (/* FIXME: non-null */(!)user_input)) {
-                    stderr.printf ("Error: your entry must match the pattern: %s\n", /* FIXME: non-null */(!)variable.pattern);
-                    continue;
+            do {
+                if (variable.default != null) {
+                    default_value = /* FIXME: non-null */((!)variable.default).to_string (substitutions);
+                    if (!variable.auto)
+                        stdout.printf ("Enter %s [default=%s]: ", variable.summary, (!)default_value);
+                } else {
+                    stdout.printf ("Enter %s: ", variable.summary);
                 }
-            }
+
+                // (user_input == "") => user hit enter key, opt for the default value
+                // (user_input == null) => user sent EOF
+
+                if (variable.auto) {
+                    user_input = "";
+                } else if ((user_input = stdin.read_line ()) == null) {
+                    throw new Valdo.TemplateApplicationError.USER_QUIT ("User has quit");
+                }
+
+                if (user_input == "" && default_value == null) {
+                    stderr.printf ("Error: %s was not specified\n", variable.summary);
+                } else if (user_input != null) {
+                    if (user_input == "")
+                        user_input = default_value;
+
+                    // verify input
+                    if (variable.pattern != null) {
+                        if (!new Regex (/* FIXME: non-null */(!)variable.pattern).match (/* FIXME: non-null */(!)user_input)) {
+                            stderr.printf ("Error: your entry must match the pattern: %s\n", /* FIXME: non-null */(!)variable.pattern);
+                        } else {
+                            input_verified = true;
+                        }
+                    } else {
+                        input_verified = true;
+                    }
+                }
+            } while (!input_verified);
 
             substitutions[variable.name] = /* FIXME: non-null */ (!)user_input;
-            i++;
         }
 
         // now apply the template to the new directory
