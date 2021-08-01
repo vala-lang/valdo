@@ -8,12 +8,12 @@
     },
     "NAMESPACE": {
       "summary": "the namespace to use for the application",
-      "default": "Gtk4App",
+      "default": "/${PROJECT_NAME}/\\w+/\\u\\0/(\\w)?\\W+(\\w)?(\\w*)/\\1\\u\\2\\L\\3\\E/^\\w/\\u\\0/",
       "pattern": "^[A-Za-z_]\\w*$"
     },
     "APP_ID": {
       "summary": "the application ID",
-      "default": "com.github.author.example",
+      "default": "com.${USERNAME}.${NAMESPACE}",
       "pattern": "^\\w+(\\.\\w+)*$"
     }
   },
