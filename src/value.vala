@@ -27,7 +27,13 @@ class Valdo.Value {
         }
     }
 
-    private string? replaced_var;
+    private List<string> _referenced_vars = new List<string> ();
+
+    /**
+     * The names of the variables referenced in the value pattern.
+     */
+    public unowned List<string> referenced_vars { get { return _referenced_vars; } }
+
     private Substitution[] subs = {};
     private string value_pattern;
 
@@ -37,7 +43,7 @@ class Valdo.Value {
             MatchInfo match_info;
             // check whether `value_pattern` is a regex
             if (new Regex ("^\\/\\${(\\w+)}").match (value_pattern, 0, out match_info)) {
-                replaced_var = (!)match_info.fetch (1);
+                _referenced_vars.append ((!) match_info.fetch (1));
                 MatchInfo submatch_info;
                 int end_pos;
                 if (match_info.fetch_pos (0, null, out end_pos)) {
@@ -48,6 +54,15 @@ class Valdo.Value {
                             subs += Substitution ((!) submatch_info.fetch (1), submatch_info.fetch (3) ?? "");
                             submatch_info.next ();
                         }
+                    }
+                }
+            } else {
+                // gather all referenced variables (this is useful for a frontend)
+                MatchInfo var_match_info;
+                if (new Regex ("\\${(\\w+)}").match (value_pattern, 0, out var_match_info)) {
+                    while (var_match_info.matches ()) {
+                        _referenced_vars.append ((!) var_match_info.fetch (1));
+                        var_match_info.next ();
                     }
                 }
             }
@@ -62,12 +77,12 @@ class Valdo.Value {
      * @param substitutions maps a variable name to a value
      */
     public string substitute (HashTable<string, string> substitutions) {
-        if (replaced_var != null) {
+        if (subs.length > 0) {
             // attempt to substitute
-            string? substitution = substitutions[(!)replaced_var];
+            string? substitution = substitutions[referenced_vars.data];
 
             if (substitution == null) {
-                warning ("could not get substitution for variable %s", /* FIXME: non-null */(!)replaced_var);
+                warning ("could not get substitution for variable %s", referenced_vars.data);
                 return "";
             }
 
