@@ -128,7 +128,7 @@ int main (string[] args) {
 
             do {
                 if (variable.default != null) {
-                    default_value = /* FIXME: non-null */((!)variable.default).to_string (substitutions);
+                    default_value = /* FIXME: non-null */((!)variable.default).substitute (substitutions);
                     if (!variable.auto)
                         stdout.printf ("Enter %s [default=%s]: ", variable.summary, (!)default_value);
                 } else {
