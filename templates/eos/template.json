@@ -22,9 +22,9 @@
     },
     "inputs": [
         "src/Application.vala.in",
-        "data/${PROGRAM_NAME}.desktop.in",
-        "data/${PROGRAM_NAME}.appdata.xml.in",
-        "com.${USERNAME}.${PROGRAM_NAME}.yml.in",
+        "data/com.github.${USERNAME}.${PROGRAM_NAME}.desktop.in",
+        "data/com.github.${USERNAME}.${PROGRAM_NAME}.appdata.xml.in",
+        "com.github.${USERNAME}.${PROGRAM_NAME}.yml.in",
         "meson.build.in",
         "README.md.in"
     ]

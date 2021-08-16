@@ -1,5 +1,5 @@
 # project name and programming language
-project('com.${USERNAME}.${PROGRAM_NAME}', 'vala', 'c')
+project('com.github.${USERNAME}.${PROGRAM_NAME}', 'vala', 'c')
 
 # Create a new executable, list the files we want to compile, list the dependencies we need, and install
 executable(
@@ -13,14 +13,14 @@ executable(
 
 # Install our .desktop file so the Applications Menu will see it
 install_data(
-    'data' / '${PROGRAM_NAME}.desktop',
+    'data' / 'com.github.${USERNAME}.${PROGRAM_NAME}.desktop',
     install_dir: get_option('datadir') / 'applications',
     rename: meson.project_name() + '.desktop'
 )
 
 # Install our .appdata.xml file so AppCenter will see it
 install_data(
-    'data' / '${PROGRAM_NAME}.appdata.xml',
+    'data' / 'com.github.${USERNAME}.${PROGRAM_NAME}.appdata.xml',
     install_dir: get_option('datadir') / 'metainfo',
     rename: meson.project_name() + '.appdata.xml'
 )

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2021 ${AUTHOR} <${USERADDR}> -->
 <component type="desktop">
-  <id>com.${USERNAME}.${PROGRAM_NAME}</id>
+  <id>com.github.${USERNAME}.${PROGRAM_NAME}</id>
   <metadata_license>CC0</metadata_license>
   <name>${PROJECT_NAME}</name>
   <summary>${PROJECT_SUMMARY}</summary>
