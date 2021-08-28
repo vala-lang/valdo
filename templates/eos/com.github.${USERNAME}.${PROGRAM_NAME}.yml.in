@@ -20,7 +20,7 @@ finish-args:
   - '--socket=fallback-x11'
   - '--socket=wayland'
 
-  # Needed to read prefer-color-scheme with Granite.Settings
+  # Needed to read prefers-color-scheme with Granite.Settings
   - '--system-talk-name=org.freedesktop.Accounts'
 
 # This section is where you list all the source code required to build your app.
