@@ -151,7 +151,7 @@ class Valdo.Template : Object, Json.Serializable {
             }
 
             var array = (!) property_node.get_array ();
-            var elements = array.get_elements ();
+            var elements = (!) array.get_elements ();
             /* FIXME: bindings for GLib.List<T> */
             for (unowned var node = elements; node != (void *)0; node = node.next) {
                 if (node.data.get_value_type () != typeof (string)) {
