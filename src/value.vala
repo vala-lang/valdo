@@ -35,7 +35,8 @@ class Valdo.Value {
     public unowned List<string> referenced_vars { get { return _referenced_vars; } }
 
     private Substitution[] subs = {};
-    private string value_pattern;
+
+    public string value_pattern { get; private set; }
 
     public Value (string value_pattern) {
         this.value_pattern = value_pattern;

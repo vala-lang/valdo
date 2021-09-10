@@ -41,7 +41,15 @@ class Valdo.Variable : Object, Json.Serializable {
      */
     public string? pattern { get; protected set; }
 
+    /**
+     * Whether the user should be prompted for the variable.
+     */
     public bool auto { get; protected set; }
+
+    /**
+     * Whether this variable was created by Valdo.
+     */
+    public bool is_default { construct; get; }
 
     /**
      * Creates a new variable for substitutions.
@@ -52,11 +60,23 @@ class Valdo.Variable : Object, Json.Serializable {
      * @param pattern   the pattern that the string must match
      */
     public Variable (string name, string summary, string? default = null, string? pattern = null) {
+        Object (is_default: true);
         this.name = name;
         this.summary = summary;
         if (default != null)
             this.default = new Value (/* FIXME: non-null */(!)default);
         this.pattern = pattern;
+    }
+
+    public override Json.Node serialize_property (string property_name, GLib.Value value, GLib.ParamSpec pspec) {
+        if (property_name == "default" && default != null)
+            return new Json.Node.alloc ().init_string ((/* FIXME: non-null */(!)default).value_pattern);
+        // omit serializing "is-default" property
+        if (property_name == "is-default") {
+            Json.Node? x = null;
+            return (!)x /* FIXME: bindings */;
+        }
+        return (!) /* FIXME: bindings */ default_serialize_property (property_name, value, pspec);
     }
 
     public override bool deserialize_property (string           property_name,
@@ -86,7 +106,7 @@ class Valdo.Variable : Object, Json.Serializable {
             // workaround for json-glib < 1.5.2 (Ubuntu 20.04 / eOS 6)
             if (property_node.get_value_type () != typeof (bool)) {
                 value = false;
-                warning ("could not deserialize property '%s' from tempalte file", property_name);
+                warning ("could not deserialize property '%s' from template file", property_name);
                 return true;
             }
 

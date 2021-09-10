@@ -78,6 +78,36 @@ class Valdo.Template : Object, Json.Serializable {
         return (Template)object;
     }
 
+    public static void add_default_variables (Array<Variable> variable_array) {
+        // try to get real name
+        string realname;
+        try {
+            Process.spawn_command_line_sync ("git config --get user.name", out realname);
+            realname = realname.strip ();
+        } catch (Error e) {
+            realname = Environment.get_real_name ();
+        }
+        variable_array.prepend_val (new Variable ("AUTHOR", "the author's real name", realname));
+
+        // try to get username
+        string username = Environment.get_user_name ();
+        variable_array.prepend_val (new Variable ("USERNAME", "the user name", username));
+
+        // try to get email
+        string default_email;
+        try {
+            Process.spawn_command_line_sync ("git config --get user.email", out default_email);
+            default_email = default_email.strip ();
+        } catch (Error e) {
+            default_email = @"$username@$(Environment.get_host_name ())";
+        }
+        variable_array.prepend_val (new Variable ("USERADDR", "the user email", default_email, Config.EMAIL_REGEX));
+
+        variable_array.prepend_val (new Variable ("PROJECT_DIR", "the folder name", "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/"));
+        variable_array.prepend_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1", "^\\d+(\\.\\d+)*$"));
+        variable_array.prepend_val (new Variable ("PROJECT_NAME", "the project name", null, "^[^\\\\\\/#?'\"\\n]+$"));
+    }
+
     public override bool deserialize_property (string           property_name,
                                                out GLib.Value   value,
                                                GLib.ParamSpec   pspec,
@@ -112,33 +142,7 @@ class Valdo.Template : Object, Json.Serializable {
                 variable_array.append_val ((Variable) variable_obj);
             });
 
-            // try to get real name
-            string realname;
-            try {
-                Process.spawn_command_line_sync ("git config --get user.name", out realname);
-                realname = realname.strip ();
-            } catch (Error e) {
-                realname = Environment.get_real_name ();
-            }
-            variable_array.prepend_val (new Variable ("AUTHOR", "the author's real name", realname));
-
-            // try to get username
-            string username = Environment.get_user_name ();
-            variable_array.prepend_val (new Variable ("USERNAME", "the user name", username));
-
-            // try to get email
-            string default_email;
-            try {
-                Process.spawn_command_line_sync ("git config --get user.email", out default_email);
-                default_email = default_email.strip ();
-            } catch (Error e) {
-                default_email = @"$username@$(Environment.get_host_name ())";
-            }
-            variable_array.prepend_val (new Variable ("USERADDR", "the user email", default_email, Config.EMAIL_REGEX));
-
-            variable_array.prepend_val (new Variable ("PROJECT_DIR", "the folder name", "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/"));
-            variable_array.prepend_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1", "^\\d+(\\.\\d+)*$"));
-            variable_array.prepend_val (new Variable ("PROJECT_NAME", "the project name", null, "^[^\\\\\\/#?'\"\\n]+$"));
+            add_default_variables (variable_array);
 
             return true;
         } else if (property_name == "inputs") {
