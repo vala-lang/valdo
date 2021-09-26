@@ -55,11 +55,13 @@ namespace Valdo.TemplateEngine {
      * @param current_dir   the current directory
      * @param project_name  the new project's name
      * @param substitutions the variable substitutions (variables => their new values)
+     * @param init_git_repo initialize a new git repository in the project directory?
      */
     void apply_template (Template                   template,
                          File                       current_dir,
                          string                     project_name,
-                         HashTable<string, string>  substitutions) throws Error {
+                         HashTable<string, string>  substitutions,
+                         bool                       init_git_repo = true) throws Error {
         // maps template file to its destination file
         var template_files = new HashTable<File, File> (null, null);
 
@@ -151,18 +153,20 @@ namespace Valdo.TemplateEngine {
         }
 
         // finally, initialize the git repository (we don't care if this part fails)
-        try {
-            Process.spawn_sync (
-                project_dir.get_path (),
-                {"git", "init"},
-                Environ.get (),
-                SpawnFlags.SEARCH_PATH | SpawnFlags.SEARCH_PATH_FROM_ENVP,
-                null
-            );
-            // create a new gitignore for meson and c files
-            project_dir.get_child (".gitignore").create (FileCreateFlags.NONE).write_all ("build/\n*~".data, null);
-        } catch (Error e) {
-            warning ("could not initialize a git repository - %s", e.message);
+        if (init_git_repo) {
+            try {
+                Process.spawn_sync (
+                    project_dir.get_path (),
+                    {"git", "init"},
+                    Environ.get (),
+                    SpawnFlags.SEARCH_PATH | SpawnFlags.SEARCH_PATH_FROM_ENVP,
+                    null
+                );
+                // create a new gitignore for meson and c files
+                project_dir.get_child (".gitignore").create (FileCreateFlags.NONE).write_all ("build/\n*~".data, null);
+            } catch (Error e) {
+                warning ("could not initialize a git repository - %s", e.message);
+            }
         }
     }
 }
