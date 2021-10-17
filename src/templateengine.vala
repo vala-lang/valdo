@@ -151,18 +151,20 @@ namespace Valdo.TemplateEngine {
         }
 
         // finally, initialize the git repository (we don't care if this part fails)
-        try {
-            Process.spawn_sync (
-                project_dir.get_path (),
-                {"git", "init"},
-                Environ.get (),
-                SpawnFlags.SEARCH_PATH | SpawnFlags.SEARCH_PATH_FROM_ENVP,
-                null
-            );
-            // create a new gitignore for meson and c files
-            project_dir.get_child (".gitignore").create (FileCreateFlags.NONE).write_all ("build/\n*~".data, null);
-        } catch (Error e) {
-            warning ("could not initialize a git repository - %s", e.message);
+        if (Environment.find_program_in_path ("git") != null) {
+            try {
+                Process.spawn_sync (
+                    project_dir.get_path (),
+                    {"git", "init"},
+                    Environ.get (),
+                    SpawnFlags.SEARCH_PATH | SpawnFlags.SEARCH_PATH_FROM_ENVP,
+                    null
+                );
+                // create a new gitignore for meson and c files
+                project_dir.get_child (".gitignore").create (FileCreateFlags.NONE).write_all ("build/\n*~".data, null);
+            } catch (Error e) {
+                warning ("could not initialize a git repository - %s", e.message);
+            }
         }
     }
 }
