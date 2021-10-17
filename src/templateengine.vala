@@ -55,13 +55,11 @@ namespace Valdo.TemplateEngine {
      * @param current_dir   the current directory
      * @param project_name  the new project's name
      * @param substitutions the variable substitutions (variables => their new values)
-     * @param init_git_repo initialize a new git repository in the project directory?
      */
     void apply_template (Template                   template,
                          File                       current_dir,
                          string                     project_name,
-                         HashTable<string, string>  substitutions,
-                         bool                       init_git_repo = true) throws Error {
+                         HashTable<string, string>  substitutions) throws Error {
         // maps template file to its destination file
         var template_files = new HashTable<File, File> (null, null);
 
@@ -153,7 +151,7 @@ namespace Valdo.TemplateEngine {
         }
 
         // finally, initialize the git repository (we don't care if this part fails)
-        if (init_git_repo) {
+        if (Environment.find_program_in_path ("git") != null) {
             try {
                 Process.spawn_sync (
                     project_dir.get_path (),
