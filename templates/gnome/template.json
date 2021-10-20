@@ -1,0 +1,57 @@
+{
+    "description": "a modern GNOME app using GTK4 and libadwaita",
+    "variables": {
+        "APP_NAME": {
+            "auto": true,
+            "default": "/${PROJECT_NAME}/.*/\\L\\g<0>\\E/"
+        },
+        "APP_TITLE": {
+            "summary": "full application name",
+            "pattern": "[A-Za-z ]+"
+        },
+        "APP_ID": {
+            "summary": "application ID",
+            "pattern": "[a-z]{2,}(\\.\\w+){3}",
+            "default": "io.github.${USERNAME}.${PROJECT_NAME}"
+        },
+        "APP_NAMESPACE": {
+            "summary": "application namespace",
+            "pattern": "[A-Z]\\w{2,}",
+            "default": "/${PROJECT_NAME}/.*/\\u\\g<0>/"
+        },
+        "APP_PATH": {
+            "auto": true,
+            "default": "/${APP_ID}/(\\.|^|$)/\\//"
+        },
+        "APP_SUMMARY": {
+            "summary": "application summary",
+            "default": "Do some cool stuff"
+        }
+    },
+    "templates": [
+        "build-aux/flatpak/${APP_ID}.yaml",
+        "build-aux/meson/build-and-run.sh",
+        "build-aux/meson/postinstall.py",
+        "data/icons/hicolor/scalable/apps/${APP_ID}.svg",
+        "data/icons/hicolor/symbolic/apps/${APP_ID}-symbolic.svg",
+        "data/${APP_ID}.appdata.xml.in.in",
+        "data/${APP_ID}.desktop.in.in",
+        "data/${APP_ID}.gschema.xml.in",
+        "data/meson.build",
+        "po/LINGUAS",
+        "po/meson.build",
+        "po/POTFILES",
+        "resources/ui/MainWindow.ui",
+        "resources/${APP_NAME}.gresource.xml",
+        "resources/meson.build",
+        "resources/style.css",
+        "src/Application.vala",
+        "src/MainWindow.vala",
+        "src/meson.build",
+        "subprojects/libadwaita.wrap",
+        "vapi/config.vapi",
+        "COPYING",
+        "meson.build",
+        "README.md"
+    ]
+}

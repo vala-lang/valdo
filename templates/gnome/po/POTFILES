@@ -1,0 +1,4 @@
+data/${APP_ID}.desktop.in.in
+data/${APP_ID}.appdata.xml.in.in
+data/${APP_ID}.gschema.xml.in
+resources/ui/MainWindow.ui

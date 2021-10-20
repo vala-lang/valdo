@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="@APP_NAME@">
+  <schema id="@APP_ID@" path="@APP_PATH@">
+
+  </schema>
+</schemalist>
