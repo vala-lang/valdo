@@ -1,0 +1,5 @@
+/_build
+/app
+/.flatpak
+/.flatpak-builder
+/subprojects/**/

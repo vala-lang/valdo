@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>@APP_ID@</id>
+  <name>@APP_TITLE@</name>
+  <summary>@APP_SUMMARY@</summary>
+  <description>
+    <p>Some useful description</p>
+  </description>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <provides>
+    <binary>@APP_NAME@</binary>
+  </provides>
+  <developer_name>${AUTHOR}</developer_name>
+  <url type="homepage">https://link.to/your/project</url>
+  <url type="bugtracker">https://link.to/your/project/issues</url>
+  <content_rating type="oars-1.1"></content_rating>
+  <releases>
+  </releases>
+</component>
