@@ -1,0 +1,20 @@
+{
+    "description": "a starter, CLI tool template",
+    "variables": {
+        "PROGRAM_NAME": {
+            "summary": "the name of the program",
+            "default": "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/",
+            "pattern": "^[[:word:]-]+$"
+        },
+        "PROJECT_SUMMARY": {
+            "summary": "a very short summary of the program",
+            "default": "A Vala CLI Tool"
+        }
+    },
+    "inputs": [
+        "src/main.vala.in",
+        "src/meson.build.in",
+        "meson.build.in",
+        "README.md.in"
+    ]
+}
