@@ -4,6 +4,14 @@ _(like "**Val**a **Do**", pronounced like "Waldo")_
 
 Create a new Vala project from a repository of templates.
 
+## Installation
+
+Packages are available for Fedora, Ubuntu, Debian, and more via
+[OBS](https://software.opensuse.org//download.html?project=home%3APrince781&package=valdo).
+
+To install from source, clone this repository and run:
+`meson build && meson install -C build`
+
 ## Example use
 
 `valdo new` - initializes a new project (from a template `new`) in the current directory
