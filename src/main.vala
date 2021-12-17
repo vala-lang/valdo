@@ -22,7 +22,7 @@ private string[] template_names;    // we only want one template, and we discard
 private bool version;
 
 private const OptionEntry[] entries = {
-    { "version", 'V', 0, OptionArg.NONE, ref version, "Output version", null },
+    { "version", 'v', 0, OptionArg.NONE, ref version, "Output version", null },
     { OPTION_REMAINING, 0, 0, OptionArg.STRING_ARRAY, ref template_names, (string)0, "TEMPLATE" },
     // list terminator (we can't use `null` here, see https://gitlab.gnome.org/GNOME/vala/-/issues/1185)
     { }
