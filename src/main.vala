@@ -22,9 +22,11 @@ private string[] template_names;    // we only want one template, and we discard
 private bool version;
 
 private const OptionEntry[] entries = {
+    /* --version/-v, print Valdo version and quit */
     { "version", 'v', 0, OptionArg.NONE, ref version, "Output version", null },
+    /* Non-named argument is treated as name of template to use */
     { OPTION_REMAINING, 0, 0, OptionArg.STRING_ARRAY, ref template_names, (string)0, "TEMPLATE" },
-    /* List terminator */
+    /* Array terminator */
     { }
 };
 
