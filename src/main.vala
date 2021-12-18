@@ -93,7 +93,7 @@ int main (string[] args) {
     }
 
     if (version) {
-        stdout.printf ("valdo %s\n", Config.PROJECT_VERSION);
+        stdout.printf ("valdo %s\n", Config.VERSION);
         return 0;
     }
 
