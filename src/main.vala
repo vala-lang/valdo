@@ -20,12 +20,15 @@
 private string[] template_names;    // we only want one template, and we discard the rest
 
 private bool version;
+private bool option_list_templates;
 
 private const OptionEntry[] ENTRIES = {
     /* --version/-v, print Valdo version and quit */
-    { "version",       'v', 0, NONE,         ref version,        "Output version", null },
+    { "version",        'v', 0, NONE,         ref version,               "Output version",           null       },
+    /* --list-templates/-l, print available project templates and quit */
+    { "list-templates", 'l', 0, NONE,         ref option_list_templates, "List available templates", null       },
     /* Non-named argument is treated as name of template to use */
-    { OPTION_REMAINING, 0,  0, STRING_ARRAY, ref template_names, (string) null,    "TEMPLATE" },
+    { OPTION_REMAINING,  0,  0, STRING_ARRAY, ref template_names,        (string) null,              "TEMPLATE" },
     /* Array terminator */
     { }
 };
@@ -81,9 +84,11 @@ int list_templates (string[] args) {
 
 int main (string[] args) {
     var ctx = new OptionContext ("- create a Vala project from a template");
+
     ctx.set_summary (@"Run $(args[0]) without any args to list all available templates");
     ctx.set_description ("Report bugs to https://github.com/Prince781/valdo/issues");
     ctx.add_main_entries (ENTRIES, null);
+
     try {
         ctx.parse (ref args);
     } catch (Error e) {
@@ -97,12 +102,14 @@ int main (string[] args) {
         return 0;
     }
 
-    if (template_names.length == 0) {
-        return list_templates (args);
+    if (option_list_templates) {
+        list_templates (args);
+        return 0;
     }
 
     if (template_names.length != 1) {
-        stderr.printf ("%s", ctx.get_help (false, null));
+        stderr.printf ("valdo: missing template name\n");
+        stderr.printf ("Try 'valdo --help' for more information\n");
         return 1;
     }
 
