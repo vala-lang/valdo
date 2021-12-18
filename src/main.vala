@@ -16,140 +16,101 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-errordomain Valdo.TemplateApplicationError {
-    USER_QUIT
-}
 namespace Valdo.Main {
-    private const OptionEntry[] ENTRIES = {
-        { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
-        { "list-templates", 'l', NONE, NONE, ref option_list_templates, "List available templates", null },
+    static string APP_NAME;
 
-        /* Non-named argument is treated as name of template to use */
-        { OPTION_REMAINING, 0, NONE, STRING_ARRAY, ref option_template_names, (string) null, "TEMPLATE" },
-
-        /* Array terminator */
-        { }
-    };
-
-    [CCode (array_length = false, array_null_terminated = true)]
-    private string[] option_template_names;    // we only want one template, and we discard the rest
-    private bool     option_version;
-    private bool     option_list_templates;
-
-    int main (string[] args) {
-        var app_name = args[0];
-
-        var ctx = new OptionContext ("- create a Vala project from a template");
-
-        ctx.set_summary (@"Run $(app_name) without any args to list all available templates");
-        ctx.set_description ("Report bugs to https://github.com/Prince781/valdo/issues");
-        ctx.add_main_entries (ENTRIES, null);
-
-        try {
-            ctx.parse (ref args);
-        } catch (Error e) {
-            stderr.printf ("%s\n", e.message);
-            stderr.printf ("Run '%s' to see a list of available templates.\n", app_name);
-            return 1;
-        }
-
-        if (option_version) {
-            stdout.printf ("%s %s\n", app_name, Config.VERSION);
-            return 0;
-        }
-
-        if (option_list_templates) {
-            list_templates ();
-            return 0;
-        }
-
-        if (option_template_names.length != 1) {
-            stderr.printf ("%s: missing template name\n", app_name);
-            stderr.printf ("Try '%s --help' for more information\n", app_name);
-            return 1;
-        }
-
-        // grab the template
-        unowned string template_name = option_template_names[0];
+    /**
+     * Initialize project from template
+     *
+     * @param template_name the name of template to use
+     * @return {@link true} on success, {@link false} otherwise
+     */
+    bool initialize_project (string template_name) {
         var template_dir = File.new_build_filename (Config.TEMPLATES_DIR, template_name);
 
         if (!template_dir.query_exists ()) {
-            stderr.printf ("Error: `%s' is not an available template.\n\n", template_name);
-            stderr.printf ("Run '%s' to see a list of available templates.\n", app_name);
-            return 1;
+            stderr.printf ("Error: '%s' is not an available template.\n\n", template_name);
+            stderr.printf ("Run '%s' to see a list of available templates.\n", APP_NAME);
+            return false;
         }
 
         try {
+            var variables = new HashTable<string, string> (str_hash, str_equal);
             var template = Valdo.Template.new_from_directory (template_dir);
-            var substitutions = new HashTable<string, string> (GLib.str_hash, GLib.str_equal);
 
-            stdout.printf ("creating %s\n", template.description);
+            stdout.printf ("Creating %s\n", template.description);
 
-            for (var i = 0; i < template.variables.length; i++) {
-                unowned var variable = template.variables.index (i);
-                string? user_input = null;
-                string? default_value = null;
-                bool input_verified = false;
+            foreach (var variable in template.variables.data) {
+                string value;
+                var default_value = variable.default?.substitute (variables);
 
-                do {
-                    if (variable.default != null) {
-                        default_value = /* FIXME: non-null */((!)variable.default).substitute (substitutions);
-                        if (!variable.auto)
-                            stdout.printf ("Enter %s [default=%s]: ", variable.summary, (!)default_value);
-                    } else {
-                        stdout.printf ("Enter %s: ", variable.summary);
+                while (true) {
+                    /* Print prompt */
+                    if (!variable.auto) {
+                        stdout.printf ("Enter %s", variable.summary);
+                        if (default_value != null)
+                            stdout.printf (" [default=%s]", (!) default_value);
+                        stdout.printf (": ");
                     }
 
-                    // (user_input == "") => user hit enter key, opt for the default value
-                    // (user_input == null) => user sent EOF
-
+                    /* Don't ask for auto variables */
                     if (variable.auto) {
-                        user_input = "";
-                    } else if ((user_input = stdin.read_line ()) == null) {
-                        throw new Valdo.TemplateApplicationError.USER_QUIT ("User has quit");
+                        if (default_value == null)
+                            error ("Can't get variable '%s': auto variables must have default value", variable.name);
+                        value = (!) default_value;
+                        break;
                     }
 
-                    if (user_input == "" && default_value == null) {
-                        stderr.printf ("Error: %s was not specified\n", variable.summary);
-                    } else if (user_input != null) {
-                        if (user_input == "")
-                            user_input = default_value;
+                    var user_input = stdin.read_line ();
 
-                        // verify input
-                        if (variable.pattern != null) {
-                            if (!new Regex (/* FIXME: non-null */(!)variable.pattern).match (/* FIXME: non-null */(!)user_input)) {
-                                stderr.printf ("Error: your entry must match the pattern: %s\n", /* FIXME: non-null */(!)variable.pattern);
-                            } else {
-                                input_verified = true;
-                            }
-                        } else {
-                            input_verified = true;
+                    /* User sent EOF */
+                    if (user_input == null) {
+                        stderr.printf ("\nProject initialization was terminated by user");
+                        return false;
+                    }
+
+                    /* Use default if
+                       value not specified */
+                    if (user_input == "") {
+                        if (default_value == null) {
+                            stderr.printf ("Please, specify %s\n", variable.summary);
+                            continue;
                         }
+                        value = (!) default_value;
+                    } else {
+                        value = (!) user_input;
                     }
-                } while (!input_verified);
 
-                substitutions[variable.name] = /* FIXME: non-null */ (!)user_input;
+                    /* Verify input */
+                    if (!new Regex (variable.pattern ?? "").match (value)) {
+                        stderr.printf ("Error: your entry must match the pattern: %s\n", (!) variable.pattern);
+                        continue;
+                    }
+
+                    break;
+                }
+
+                variables[variable.name] = /* FIXME: non-null */ value;
             }
 
-            // now apply the template to the new directory
-            string project_name = substitutions["PROJECT_DIR"];
+            /* Now apply the template to the new directory */
+            string project_name = variables["PROJECT_DIR"];
             Valdo.TemplateEngine.apply_template (
                 template,
                 File.new_for_path (Environment.get_current_dir ()),
                 project_name,
-                substitutions
+                variables
             );
         } catch (Error e) {
-            if (!(e is Valdo.TemplateApplicationError.USER_QUIT)) {
-                stderr.printf ("Applying template failed\n");
-                stderr.printf ("%s\n", e.message);
-            }
-            return 1;
+            error ("Can't initialize project from template: %s", e.message);
         }
 
-        return 0;
+        return true;
     }
 
+    /**
+     * List available templates
+     */
     void list_templates () {
         var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
         var templates = new HashTable<string, string> (str_hash, str_equal);
@@ -184,5 +145,64 @@ namespace Valdo.Main {
         } else {
             stdout.printf ("There are no templates available.\n");
         }
+    }
+
+    private const OptionEntry[] ENTRIES = {
+        { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
+        { "list-templates", 'l', NONE, NONE, ref option_list_templates, "List available templates", null },
+
+        /* Non-named argument is treated as name of template to use */
+        { OPTION_REMAINING, 0, NONE, STRING_ARRAY, ref option_template_names, (string) null, "TEMPLATE" },
+
+        /* Array terminator */
+        { }
+    };
+
+    [CCode (array_length = false, array_null_terminated = true)]
+    private string[] option_template_names;    // we only want one template, and we discard the rest
+    private bool     option_version;
+    private bool     option_list_templates;
+
+    int main (string[] args) {
+        APP_NAME = args[0];
+
+        /* Parse command-line options */
+        var ctx = new OptionContext ("- create a Vala project from a template");
+
+        ctx.set_summary (@"Run $(APP_NAME) without any args to list all available templates");
+        ctx.set_description ("Report bugs to https://github.com/Prince781/valdo/issues");
+        ctx.add_main_entries (ENTRIES, null);
+
+        try {
+            ctx.parse (ref args);
+        } catch (Error e) {
+            stderr.printf ("%s\n", e.message);
+            stderr.printf ("Run '%s' to see a list of available templates.\n", APP_NAME);
+            return 1;
+        }
+
+        /* --version/-v */
+        if (option_version) {
+            stdout.printf ("%s %s\n", APP_NAME, Config.VERSION);
+            return 0;
+        }
+
+        /* -l/--list-templates */
+        if (option_list_templates) {
+            list_templates ();
+            return 0;
+        }
+
+        /* Quit if not one template specified */
+        if (option_template_names.length != 1) {
+            stderr.printf ("%s: missing template name\n", APP_NAME);
+            stderr.printf ("Try '%s --help' for more information\n", APP_NAME);
+            return 1;
+        }
+
+        if (initialize_project (option_template_names[0]))
+            return 0;
+        else
+            return 1;
     }
 }
