@@ -24,7 +24,7 @@ private bool option_list_templates;
 
 private const OptionEntry[] ENTRIES = {
     /* --version/-v, print Valdo version and quit */
-    { "version",        'v', 0, NONE,         ref version,               "Output version",           null       },
+    { "version",        'v', 0, NONE,         ref version,               "Display version number",   null       },
     /* --list-templates/-l, print available project templates and quit */
     { "list-templates", 'l', 0, NONE,         ref option_list_templates, "List available templates", null       },
     /* Non-named argument is treated as name of template to use */
