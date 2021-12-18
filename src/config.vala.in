@@ -1,4 +1,4 @@
 namespace Config {
     const string TEMPLATES_DIR = "@DATA_DIR@";
-    const string BUILD_VERSION = "@VCS_TAG@";
+    const string VERSION = "@VCS_TAG@";
 }
