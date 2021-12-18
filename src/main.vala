@@ -21,7 +21,7 @@ private string[] template_names;    // we only want one template, and we discard
 
 private bool version;
 
-private const OptionEntry[] entries = {
+private const OptionEntry[] ENTRIES = {
     /* --version/-v, print Valdo version and quit */
     { "version", 'v', 0, OptionArg.NONE, ref version, "Output version", null },
     /* Non-named argument is treated as name of template to use */
@@ -84,7 +84,7 @@ int main (string[] args) {
     ctx.set_summary (@"Run $(args[0]) without any args to list all available templates");
     ctx.set_description ("Report bugs to https://github.com/Prince781/valdo/issues");
     try {
-        ctx.add_main_entries (entries, null);
+        ctx.add_main_entries (ENTRIES, null);
         ctx.parse (ref args);
     } catch (Error e) {
         stderr.printf ("%s\n", e.message);
