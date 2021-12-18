@@ -71,16 +71,16 @@ class Valdo.Template : Object, Json.Serializable {
             throw new TemplateError.COULD_NOT_GET_PATH ("%s does not have a path", template_json.get_uri ());
 
         var parser = new Json.Parser ();
-        parser.load_from_file (/* FIXME: non-null */ (!)path);
+        parser.load_from_file ((!) path);
 
         if (parser.get_root () == null)
-            throw new TemplateError.EMPTY_TEMPLATE_FILE ("%s: no root node", (!)path);
+            throw new TemplateError.EMPTY_TEMPLATE_FILE ("%s: no root node", (!) path);
 
-        var object = Json.gobject_deserialize (typeof (Template), /* FIXME: non-null */ (!)parser.get_root ());
+        var object = Json.gobject_deserialize (typeof (Template), (!) parser.get_root ());
         if (!(object is Template))
-            throw new TemplateError.DESERIALIZATION_FAILED ("%s: failed to deserialize", (!)path);
+            throw new TemplateError.DESERIALIZATION_FAILED ("%s: failed to deserialize", (!) path);
 
-        // set template directory
+        /* Set template directory */
         ((Template)object).directory = template_dir;
         return (Template)object;
     }
