@@ -23,9 +23,9 @@ private bool version;
 
 private const OptionEntry[] ENTRIES = {
     /* --version/-v, print Valdo version and quit */
-    { "version", 'v', 0, OptionArg.NONE, ref version, "Output version", null },
+    { "version", 'v', 0, NONE, ref version, "Output version", null },
     /* Non-named argument is treated as name of template to use */
-    { OPTION_REMAINING, 0, 0, OptionArg.STRING_ARRAY, ref template_names, (string)0, "TEMPLATE" },
+    { OPTION_REMAINING, 0, 0, STRING_ARRAY, ref template_names, (string)0, "TEMPLATE" },
     /* Array terminator */
     { }
 };
@@ -41,7 +41,7 @@ int list_templates (string[] args) {
     try {
         var enumerator = templates_dir.enumerate_children (
             FileAttribute.ID_FILE,
-            FileQueryInfoFlags.NOFOLLOW_SYMLINKS);
+            NOFOLLOW_SYMLINKS);
 
         var errors = new Array<Error> ();
         var templates = new HashTable<string, string> (str_hash, str_equal);

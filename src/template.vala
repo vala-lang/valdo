@@ -87,7 +87,7 @@ class Valdo.Template : Object, Json.Serializable {
             var variable_set = new GenericSet<Variable> (Variable.hash, Variable.equal_to);
             value = variable_array;
 
-            if (property_node.get_node_type () != Json.NodeType.OBJECT) {
+            if (property_node.get_node_type () != OBJECT) {
                 warning ("expected dictionary for '%s' property", property_name);
                 return true;
             }
@@ -145,7 +145,7 @@ class Valdo.Template : Object, Json.Serializable {
             var list = new GenericSet<string> (GLib.str_hash, GLib.str_equal);
             value = list;
 
-            if (property_node.get_node_type () != Json.NodeType.ARRAY) {
+            if (property_node.get_node_type () != ARRAY) {
                 warning ("expected array for '%s' property", property_name);
                 return true;
             }

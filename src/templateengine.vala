@@ -25,13 +25,13 @@ namespace Valdo.TemplateEngine {
                                                  HashTable<FileInfo, File>  found = new HashTable<FileInfo, File> (null, null)) throws Error {
         FileEnumerator enumerator = dir.enumerate_children (
             FileAttribute.ID_FILE,
-            FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+            NOFOLLOW_SYMLINKS,
             cancellable);
 
         try {
             FileInfo? finfo;
             while ((finfo = enumerator.next_file (cancellable)) != null) {
-                if (/* FIXME: non-null */ ((!)finfo).get_file_type () == FileType.DIRECTORY) {
+                if (/* FIXME: non-null */ ((!)finfo).get_file_type () == DIRECTORY) {
                     list_files (
                         enumerator.get_child (/* FIXME: non-null */ (!)finfo),
                         cancellable,
@@ -71,8 +71,8 @@ namespace Valdo.TemplateEngine {
         var files_list = list_files (template.directory);
         foreach (var template_child_info in files_list.get_keys_as_array ()) {
             var file_type = /* FIXME: non-null */ ((!)template_child_info).get_file_type ();
-            if (!(file_type == FileType.REGULAR || file_type == FileType.SYMBOLIC_LINK ||
-                  file_type == FileType.SHORTCUT || file_type == FileType.DIRECTORY))
+            if (!(file_type == REGULAR || file_type == SYMBOLIC_LINK ||
+                  file_type == SHORTCUT || file_type ==DIRECTORY))
                 continue;
 
             var template_child = files_list[template_child_info];
@@ -100,7 +100,7 @@ namespace Valdo.TemplateEngine {
             var project_child = project_dir.resolve_relative_path (project_child_path_relative);
             var project_child_parentdir = project_child.get_parent ();
 
-            if (file_type == FileType.DIRECTORY) {
+            if (file_type == DIRECTORY) {
                 // create an empty directory
                 DirUtils.create_with_parents ((!) project_child.get_path (), 0755);
             } else {
@@ -112,7 +112,7 @@ namespace Valdo.TemplateEngine {
                 // if this is not a template file, just copy it over
                 if (!(template_child_path_relative in template.inputs)) {
                     // TODO: show file copy progress
-                    template_child.copy (project_child, FileCopyFlags.NONE);
+                    template_child.copy (project_child, NONE);
                 } else {
                     // remove '.in' suffix if there is one
                     var project_child_path = (!)project_child.get_path ();
@@ -147,7 +147,7 @@ namespace Valdo.TemplateEngine {
 
             // now write to the new file
             var project_file = template_files[template_file];
-            project_file.create (FileCreateFlags.NONE).write_all (template_contents.data, null);
+            project_file.create (NONE).write_all (template_contents.data, null);
         }
 
         // finally, initialize the git repository (we don't care if this part fails)
@@ -157,11 +157,11 @@ namespace Valdo.TemplateEngine {
                     project_dir.get_path (),
                     {"git", "init"},
                     Environ.get (),
-                    SpawnFlags.SEARCH_PATH | SpawnFlags.SEARCH_PATH_FROM_ENVP,
+                    SEARCH_PATH | SEARCH_PATH_FROM_ENVP,
                     null
                 );
                 // create a new gitignore for meson and c files
-                project_dir.get_child (".gitignore").create (FileCreateFlags.NONE).write_all ("build/\n*~".data, null);
+                project_dir.get_child (".gitignore").create (NONE).write_all ("build/\n*~".data, null);
             } catch (Error e) {
                 warning ("could not initialize a git repository - %s", e.message);
             }
