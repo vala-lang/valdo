@@ -20,12 +20,6 @@ errordomain Valdo.TemplateApplicationError {
     USER_QUIT
 }
 namespace Valdo.Main {
-    [CCode (array_length = false, array_null_terminated = true)]
-    private string[] option_template_names;    // we only want one template, and we discard the rest
-
-    private bool option_version;
-    private bool option_list_templates;
-
     private const OptionEntry[] ENTRIES = {
         { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
         { "list-templates", 'l', NONE, NONE, ref option_list_templates, "List available templates", null },
@@ -37,41 +31,10 @@ namespace Valdo.Main {
         { }
     };
 
-    void list_templates () {
-        var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
-        var templates = new HashTable<string, string> (str_hash, str_equal);
-        int max_template_name_len = 0;
-
-        try {
-            var enumerator = templates_dir.enumerate_children (
-                FileAttribute.ID_FILE,
-                NONE
-            );
-
-            FileInfo? fileinfo;
-            while ((fileinfo = enumerator.next_file ()) != null) {
-                var template_name = fileinfo?.get_name () ?? "";
-                var template = Valdo.Template.new_from_directory (File.new_build_filename (
-                    Config.TEMPLATES_DIR, template_name
-                ));
-                templates[template_name] = template.description;
-                if (max_template_name_len < template_name.length)
-                    max_template_name_len = template_name.length;
-            }
-        } catch (Error e) {
-            error ("Can't enumerate templates: %s", e.message);
-        }
-
-        if (templates.length != 0) {
-            stdout.printf ("Available templates:\n");
-            stdout.printf ("--------------------\n");
-
-            foreach (unowned var name in templates.get_keys_as_array ())
-                print ("%s%s - %s\n", name, string.nfill (max_template_name_len - name.length, ' '), templates[name]);
-        } else {
-            stdout.printf ("There are no templates available.\n");
-        }
-    }
+    [CCode (array_length = false, array_null_terminated = true)]
+    private string[] option_template_names;    // we only want one template, and we discard the rest
+    private bool     option_version;
+    private bool     option_list_templates;
 
     int main (string[] args) {
         var app_name = args[0];
@@ -185,5 +148,41 @@ namespace Valdo.Main {
         }
 
         return 0;
+    }
+
+    void list_templates () {
+        var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
+        var templates = new HashTable<string, string> (str_hash, str_equal);
+        int max_template_name_len = 0;
+
+        try {
+            var enumerator = templates_dir.enumerate_children (
+                FileAttribute.ID_FILE,
+                NONE
+            );
+
+            FileInfo? fileinfo;
+            while ((fileinfo = enumerator.next_file ()) != null) {
+                var template_name = fileinfo?.get_name () ?? "";
+                var template = Valdo.Template.new_from_directory (File.new_build_filename (
+                    Config.TEMPLATES_DIR, template_name
+                ));
+                templates[template_name] = template.description;
+                if (max_template_name_len < template_name.length)
+                    max_template_name_len = template_name.length;
+            }
+        } catch (Error e) {
+            error ("Can't enumerate templates: %s", e.message);
+        }
+
+        if (templates.length != 0) {
+            stdout.printf ("Available templates:\n");
+            stdout.printf ("--------------------\n");
+
+            foreach (unowned var name in templates.get_keys_as_array ())
+                print ("%s%s - %s\n", name, string.nfill (max_template_name_len - name.length, ' '), templates[name]);
+        } else {
+            stdout.printf ("There are no templates available.\n");
+        }
     }
 }
