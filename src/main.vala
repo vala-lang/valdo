@@ -83,6 +83,8 @@ int list_templates (string[] args) {
 }
 
 int main (string[] args) {
+    var app_name = args[0];
+
     var ctx = new OptionContext ("- create a Vala project from a template");
 
     ctx.set_summary (@"Run $(args[0]) without any args to list all available templates");
@@ -93,12 +95,12 @@ int main (string[] args) {
         ctx.parse (ref args);
     } catch (Error e) {
         stderr.printf ("%s\n", e.message);
-        stderr.printf ("Run '%s' to see a list of available templates.\n", args[0]);
+        stderr.printf ("Run '%s' to see a list of available templates.\n", app_name);
         return 1;
     }
 
     if (version) {
-        stdout.printf ("valdo %s\n", Config.VERSION);
+        stdout.printf ("%s %s\n", app_name, Config.VERSION);
         return 0;
     }
 
@@ -108,8 +110,8 @@ int main (string[] args) {
     }
 
     if (template_names.length != 1) {
-        stderr.printf ("valdo: missing template name\n");
-        stderr.printf ("Try 'valdo --help' for more information\n");
+        stderr.printf ("%s: missing template name\n", app_name);
+        stderr.printf ("Try '%s --help' for more information\n", app_name);
         return 1;
     }
 
