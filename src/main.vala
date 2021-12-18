@@ -17,16 +17,18 @@
  */
 
 [CCode (array_length = false, array_null_terminated = true)]
-private string[] template_names;    // we only want one template, and we discard the rest
+private string[] option_template_names;    // we only want one template, and we discard the rest
 
-private bool version;
+private bool option_version;
 private bool option_list_templates;
 
 private const OptionEntry[] ENTRIES = {
-    { "version",        'v', NONE, NONE, ref version,               "Display version number",   null },
+    { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
     { "list-templates", 'l', NONE, NONE, ref option_list_templates, "List available templates", null },
+
     /* Non-named argument is treated as name of template to use */
-    { OPTION_REMAINING, 0, NONE, STRING_ARRAY, ref template_names, (string) null, "TEMPLATE" },
+    { OPTION_REMAINING, 0, NONE, STRING_ARRAY, ref option_template_names, (string) null, "TEMPLATE" },
+
     /* Array terminator */
     { }
 };
@@ -88,7 +90,7 @@ int main (string[] args) {
         return 1;
     }
 
-    if (version) {
+    if (option_version) {
         stdout.printf ("%s %s\n", app_name, Config.VERSION);
         return 0;
     }
@@ -98,14 +100,14 @@ int main (string[] args) {
         return 0;
     }
 
-    if (template_names.length != 1) {
+    if (option_template_names.length != 1) {
         stderr.printf ("%s: missing template name\n", app_name);
         stderr.printf ("Try '%s --help' for more information\n", app_name);
         return 1;
     }
 
     // grab the template
-    unowned string template_name = template_names[0];
+    unowned string template_name = option_template_names[0];
     var template_dir = File.new_build_filename (Config.TEMPLATES_DIR, template_name);
 
     if (!template_dir.query_exists ()) {
