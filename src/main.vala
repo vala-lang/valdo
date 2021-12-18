@@ -17,7 +17,43 @@
  */
 
 namespace Valdo.Main {
+    /**
+     * Application name retrieved from arguments
+     */
     static string APP_NAME;
+
+    /**
+     * Command-line options
+     */
+     private const OptionEntry[] ENTRIES = {
+        { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
+        { "list-templates", 'l', NONE, NONE, ref option_list_templates, "List available templates", null },
+
+        /* Non-named argument is treated as name of template to use */
+        { OPTION_REMAINING, 0, NONE, STRING_ARRAY, ref non_option_arguments, (string) null, "TEMPLATE" },
+
+        /* Array terminator */
+        { }
+    };
+
+    /**
+     * Whether --version option is used
+     */
+    private bool option_version;
+
+    /**
+     * Whether --list-templates option is user
+     */
+    private bool option_list_templates;
+
+    /**
+     * Non-option command-line arguments
+     *
+     * There should be only one such argument
+     * representing template name to use
+     */
+    [CCode (array_length = false, array_null_terminated = true)]
+    private string[] non_option_arguments;
 
     /**
      * Initialize project from template
@@ -147,22 +183,9 @@ namespace Valdo.Main {
         }
     }
 
-    private const OptionEntry[] ENTRIES = {
-        { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
-        { "list-templates", 'l', NONE, NONE, ref option_list_templates, "List available templates", null },
-
-        /* Non-named argument is treated as name of template to use */
-        { OPTION_REMAINING, 0, NONE, STRING_ARRAY, ref option_template_names, (string) null, "TEMPLATE" },
-
-        /* Array terminator */
-        { }
-    };
-
-    [CCode (array_length = false, array_null_terminated = true)]
-    private string[] option_template_names;    // we only want one template, and we discard the rest
-    private bool     option_version;
-    private bool     option_list_templates;
-
+    /**
+     * Application entry point
+     */
     int main (string[] args) {
         APP_NAME = args[0];
 
@@ -194,13 +217,13 @@ namespace Valdo.Main {
         }
 
         /* Quit if not one template specified */
-        if (option_template_names.length != 1) {
+        if (non_option_arguments.length != 1) {
             stderr.printf ("%s: missing template name\n", APP_NAME);
             stderr.printf ("Try '%s --help' for more information\n", APP_NAME);
             return 1;
         }
 
-        if (initialize_project (option_template_names[0]))
+        if (initialize_project (non_option_arguments[0]))
             return 0;
         else
             return 1;
