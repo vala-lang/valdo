@@ -35,49 +35,40 @@ errordomain Valdo.TemplateApplicationError {
     USER_QUIT
 }
 
-int list_templates (string[] args) {
+void list_templates () {
     var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
-    bool printed_header = false;
+    var templates = new HashTable<string, string> (str_hash, str_equal);
+    int max_template_name_len = 0;
 
     try {
         var enumerator = templates_dir.enumerate_children (
             FileAttribute.ID_FILE,
-            NOFOLLOW_SYMLINKS);
+            NONE
+        );
 
-        var errors = new Array<Error> ();
-        var templates = new HashTable<string, string> (str_hash, str_equal);
-        FileInfo? finfo = null;
-        int max_template_name_len = -1;
-        while ((finfo = enumerator.next_file ()) != null) {
-            unowned var template_name = /* FIXME: non-null */ ((!)finfo).get_name ();
-            try {
-                var template = Valdo.Template.new_from_directory (File.new_build_filename (Config.TEMPLATES_DIR, template_name));
-                if (!printed_header) {
-                    stdout.printf ("Available templates:\n--------------------\n");
-                    printed_header = true;
-                }
-                templates[template_name] = template.description;
-                if (max_template_name_len < template_name.length)
-                    max_template_name_len = template_name.length;
-            } catch (Error e) {
-                errors.append_val (e);
-            }
+        FileInfo? fileinfo;
+        while ((fileinfo = enumerator.next_file ()) != null) {
+            var template_name = fileinfo?.get_name () ?? "";
+            var template = Valdo.Template.new_from_directory (File.new_build_filename (
+                Config.TEMPLATES_DIR, template_name
+            ));
+            templates[template_name] = template.description;
+            if (max_template_name_len < template_name.length)
+                max_template_name_len = template_name.length;
         }
+    } catch (Error e) {
+        error ("Can't enumerate templates: %s", e.message);
+    }
+
+    if (templates.length != 0) {
+        stdout.printf ("Available templates:\n");
+        stdout.printf ("--------------------\n");
 
         foreach (unowned string name in templates.get_keys_as_array ())
             print ("%s%s - %s\n", name, string.nfill (max_template_name_len - name.length, ' '), templates[name]);
-
-        for (var i = 0; i < errors.length; i++)
-            stderr.printf ("%s\n", errors.index (i).message);
-    } catch (Error e) {
-        stderr.printf ("%s\n", e.message);
-        stderr.printf ("could not enumerate templates.\n");
-        return 1;
-    }
-    if (!printed_header) {
+    } else {
         stdout.printf ("There are no templates available.\n");
     }
-    return 0;
 }
 
 int main (string[] args) {
@@ -103,7 +94,7 @@ int main (string[] args) {
     }
 
     if (option_list_templates) {
-        list_templates (args);
+        list_templates ();
         return 0;
     }
 
