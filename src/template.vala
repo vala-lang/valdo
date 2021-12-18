@@ -88,98 +88,92 @@ class Valdo.Template : Object, Json.Serializable {
     public override bool deserialize_property (string           property_name,
                                                out GLib.Value   value,
                                                GLib.ParamSpec   pspec,
-                                               Json.Node        property_node) {
-        if (property_name == "variables") {
+                                               Json.Node        node) {
+        switch (property_name) {
+        case "variables":
             var variable_array = new Array<Variable> ();
-            var variable_set = new GenericSet<Variable> (Variable.hash, Variable.equal_to);
             value = variable_array;
 
-            if (property_node.get_node_type () != OBJECT) {
-                warning ("expected dictionary for '%s' property", property_name);
-                return true;
+            var variables = node.get_node_type () == OBJECT
+                ? node.get_object ()
+                : null;
+            if (variables == null) {
+                critical ("expected dictionary for '%s' property", property_name);
+                return false;
             }
 
-            var object = (!) property_node.get_object ();
-            /* FIXME: we can't inline `members` because of owned references and duplicating Lists */
-            object.foreach_member ((object, variable_name, member_value) => {
-                var variable_obj = Json.gobject_deserialize (typeof (Variable), member_value);
-                if (!(variable_obj is Variable))
-                    warning ("failed to deserialize variable %s", variable_name);
-
-                if (variable_obj is Variable) {
-                    var variable = (Variable)variable_obj;
-                    if (variable.auto && variable.default == null) {
-                        warning ("auto variable %s must have a default value", variable_name);
-                        return;
-                    }
+            /* Load template-specific variables */
+            variables?.foreach_member ((_, variable_name, node) => {
+                var variable_obj = Json.gobject_deserialize (typeof (Variable), node) as Variable;
+                if (variable_obj == null) {
+                    warning ("failed to deserialize variable '%s'", variable_name);
+                    return;
                 }
-
-                ((Variable)variable_obj).name = variable_name;
-                variable_set.add ((Variable) variable_obj);
-                variable_array.append_val ((Variable) variable_obj);
+                var variable = (!) variable_obj;
+                variable.name = variable_name;
+                if (variable.auto && variable.default == null) {
+                    warning ("auto variable '%s' must have a default value", variable_name);
+                }
+                variable_array.append_val ((!) variable);
             });
 
-            // try to get real name
+            /* Load pre-defined variable */
+
+            /* Real name */
             string realname;
             try {
                 Process.spawn_command_line_sync ("git config --get user.name", out realname);
                 realname = realname.strip ();
-            } catch (Error e) {
+            } catch (SpawnError e) {
                 realname = Environment.get_real_name ();
             }
-            variable_array.prepend_val (new Variable ("AUTHOR", "the author's real name", realname));
+            variable_array.prepend_val (new Variable ("AUTHOR", "the authors's real name", realname));
 
-            // try to get username
-            string username = Environment.get_user_name ();
+            /* Username */
+            var username = Environment.get_user_name ();
             variable_array.prepend_val (new Variable ("USERNAME", "the user name", username));
 
-            // try to get email
-            string default_email;
+            /* Email */
+            string email;
             try {
-                Process.spawn_command_line_sync ("git config --get user.email", out default_email);
-                default_email = default_email.strip ();
-            } catch (Error e) {
-                default_email = @"$username@$(Environment.get_host_name ())";
+                Process.spawn_command_line_sync ("git config --get user.email", out email);
+                email = email.strip ();
+            } catch (SpawnError e) {
+                email = @"$username@$(Environment.get_host_name ())";
             }
-            variable_array.prepend_val (new Variable ("USERADDR", "the user email", default_email, EMAIL_REGEX));
+            variable_array.prepend_val (new Variable ("USERADDR", "the user email", email, EMAIL_REGEX));
 
+            /* Project info */
             variable_array.prepend_val (new Variable ("PROJECT_DIR", "the folder name", "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/"));
             variable_array.prepend_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1", "^\\d+(\\.\\d+)*$"));
             variable_array.prepend_val (new Variable ("PROJECT_NAME", "the project name", null, "^[^\\\\\\/#?'\"\\n]+$"));
 
             return true;
-        } else if (property_name == "inputs") {
-            var list = new GenericSet<string> (GLib.str_hash, GLib.str_equal);
-            value = list;
+        case "inputs":
+            var inputs = new GenericSet<string> (str_hash, str_equal);
+            value = inputs;
 
-            if (property_node.get_node_type () != ARRAY) {
+            var inputs_array = node.get_node_type () == ARRAY
+                ? node.get_array ()
+                : null;
+            if (inputs_array == null) {
                 warning ("expected array for '%s' property", property_name);
-                return true;
+                return false;
             }
 
-            var array = (!) property_node.get_array ();
-            var elements = (!) array.get_elements ();
-            /* FIXME: bindings for GLib.List<T> */
-            for (unowned var node = elements; node != (void *)0; node = node.next) {
-                if (node.data.get_value_type () != typeof (string)) {
-                    warning ("expected string in input array");
-                    continue;
+            inputs_array?.foreach_element ((_, i, node) => {
+                var filename = node.get_string ();
+                if (filename == null) {
+                    warning ("expected string in inputs array");
+                    return;
                 }
-                list.add ((!)node.data.get_string ());
-            }
+                inputs.add ((!) filename);
+            });
 
             return true;
-        } else if (property_name == "description") {
-            // workaround for json-glib < 1.5.2 (Ubuntu 20.04 / eOS 6.0)
-            if (property_node.get_value_type () != typeof (string)) {
-                warning ("invalid type for property '%s'", property_name);
-                value = "";
-                return true;
-            }
-            value = (!)property_node.get_string ();
-            return true;
-        } else {
-            return default_deserialize_property (property_name, out value, pspec, property_node);
+        case "description":
+        default:
+            return default_deserialize_property (property_name, out value, pspec, node);
         }
     }
 }

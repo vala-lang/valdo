@@ -28,20 +28,20 @@ class Valdo.Variable : Object, Json.Serializable {
     /**
      * A short description of the variable's meaning
      */
-    public string summary { get; protected set; }
+    public string summary { get; protected set; default = ""; }
 
     /**
      * The variable's default value, or `null`
      */
-    public Value? default { get; protected set; }
+    public Value? @default { get; protected set; default = null; }
 
     /**
      * The pattern that the string must match, or `null` if any string is
      * accepted.
      */
-    public string? pattern { get; protected set; }
+    public string? pattern { get; protected set; default = null; }
 
-    public bool auto { get; protected set; }
+    public bool auto { get; protected set; default = false; }
 
     /**
      * Creates a new variable for substitutions.
@@ -61,47 +61,23 @@ class Valdo.Variable : Object, Json.Serializable {
 
     public override bool deserialize_property (string           property_name,
                                                out GLib.Value   value,
-                                               GLib.ParamSpec   pspec,
-                                               Json.Node        property_node) {
-        if (property_name == "default") {
-            if (property_node.get_value_type () != typeof (string)) {
+                                               ParamSpec        pspec,
+                                               Json.Node        node) {
+        switch (property_name) {
+        case "default":
+            var default_value = node.get_string ();
+            if (default_value == null) {
                 value = "";
-                warning ("could not deserialize property '%s' from template file", property_name);
+                warning ("can't deserealize property '%s' from template file", property_name);
                 return false;
             }
-
-            value = new Valdo.Value ((!)property_node.get_string ());
+            value = new Valdo.Value ((!) default_value);
             return true;
-        } else if (property_name == "name" || property_name == "summary" || property_name == "pattern") {
-            // workaround for json-glib < 1.5.2 (Ubuntu 20.04 / eOS 6)
-            if (property_node.get_value_type () != typeof (string)) {
-                value = "";
-                warning ("could not deserialize property '%s' from template file", property_name);
-                return false;
-            }
-
-            value = (!)property_node.get_string ();
-            return true;
-        } else if (property_name == "auto") {
-            // workaround for json-glib < 1.5.2 (Ubuntu 20.04 / eOS 6)
-            if (property_node.get_value_type () != typeof (bool)) {
-                value = false;
-                warning ("could not deserialize property '%s' from tempalte file", property_name);
-                return true;
-            }
-
-            value = (!)property_node.get_boolean ();
-            return true;
-        } else {
-            return default_deserialize_property (property_name, out value, pspec, property_node);
+        case "summary":
+        case "pattern":
+        case "auto":
+        default:
+            return default_deserialize_property (property_name, out value, pspec, node);
         }
-    }
-
-    public uint hash () {
-        return name.hash ();
-    }
-
-    public bool equal_to (Variable other) {
-        return name == other.name;
     }
 }
