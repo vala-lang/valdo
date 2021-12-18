@@ -85,7 +85,7 @@ int main (string[] args) {
 
     var ctx = new OptionContext ("- create a Vala project from a template");
 
-    ctx.set_summary (@"Run $(args[0]) without any args to list all available templates");
+    ctx.set_summary (@"Run $(app_name) without any args to list all available templates");
     ctx.set_description ("Report bugs to https://github.com/Prince781/valdo/issues");
     ctx.add_main_entries (ENTRIES, null);
 
@@ -119,7 +119,7 @@ int main (string[] args) {
 
     if (!template_dir.query_exists ()) {
         stderr.printf ("Error: `%s' is not an available template.\n\n", template_name);
-        stderr.printf ("Run '%s' to see a list of available templates.\n", args[0]);
+        stderr.printf ("Run '%s' to see a list of available templates.\n", app_name);
         return 1;
     }
 
