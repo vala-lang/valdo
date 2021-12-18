@@ -83,8 +83,8 @@ int main (string[] args) {
     var ctx = new OptionContext ("- create a Vala project from a template");
     ctx.set_summary (@"Run $(args[0]) without any args to list all available templates");
     ctx.set_description ("Report bugs to https://github.com/Prince781/valdo/issues");
+    ctx.add_main_entries (ENTRIES, null);
     try {
-        ctx.add_main_entries (ENTRIES, null);
         ctx.parse (ref args);
     } catch (Error e) {
         stderr.printf ("%s\n", e.message);
