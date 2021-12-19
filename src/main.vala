@@ -66,7 +66,7 @@ namespace Valdo.Main {
 
         if (!template_dir.query_exists ()) {
             stderr.printf ("Error: '%s' is not an available template.\n\n", template_name);
-            stderr.printf ("Run '%s' to see a list of available templates.\n", APP_NAME);
+            stderr.printf ("Run '%s --list-templates' to see a list of available templates.\n", APP_NAME);
             return false;
         }
 
@@ -200,7 +200,7 @@ namespace Valdo.Main {
             ctx.parse (ref args);
         } catch (Error e) {
             stderr.printf ("%s\n", e.message);
-            stderr.printf ("Run '%s' to see a list of available templates.\n", APP_NAME);
+            stderr.printf ("Try '%s --help' for more information\n", APP_NAME);
             return 1;
         }
 
