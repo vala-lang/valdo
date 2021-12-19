@@ -81,8 +81,8 @@ class Valdo.Template : Object, Json.Serializable {
             throw new TemplateError.DESERIALIZATION_FAILED ("%s: failed to deserialize", (!) path);
 
         /* Set template directory */
-        ((Template)object).directory = template_dir;
-        return (Template)object;
+        ((Template) object).directory = template_dir;
+        return (Template) object;
     }
 
     public override bool deserialize_property (string           property_name,

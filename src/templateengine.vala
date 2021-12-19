@@ -31,16 +31,16 @@ namespace Valdo.TemplateEngine {
         try {
             FileInfo? finfo;
             while ((finfo = enumerator.next_file (cancellable)) != null) {
-                if (/* FIXME: non-null */ ((!)finfo).get_file_type () == DIRECTORY) {
+                if (/* FIXME: non-null */ ((!) finfo).get_file_type () == DIRECTORY) {
                     list_files (
-                        enumerator.get_child (/* FIXME: non-null */ (!)finfo),
+                        enumerator.get_child (/* FIXME: non-null */ (!) finfo),
                         cancellable,
                         found);
                 }
-                found[(!)finfo] = enumerator.get_child ((!)finfo);
+                found[(!) finfo] = enumerator.get_child ((!) finfo);
             }
         } catch (Error e) {
-            warning ("could not get next file in dir %s", (!)dir.get_path ());
+            warning ("could not get next file in dir %s", (!) dir.get_path ());
         }
 
         return found;
@@ -70,13 +70,13 @@ namespace Valdo.TemplateEngine {
         // copy everything into it
         var files_list = list_files (template.directory);
         foreach (var template_child_info in files_list.get_keys_as_array ()) {
-            var file_type = /* FIXME: non-null */ ((!)template_child_info).get_file_type ();
+            var file_type = /* FIXME: non-null */ ((!) template_child_info).get_file_type ();
             if (!(file_type == REGULAR || file_type == SYMBOLIC_LINK ||
                   file_type == SHORTCUT || file_type ==DIRECTORY))
                 continue;
 
             var template_child = files_list[template_child_info];
-            var template_child_path_relative = (!)template.directory.get_relative_path (template_child);
+            var template_child_path_relative = (!) template.directory.get_relative_path (template_child);
 
             if (template_child_path_relative == "template.json")
                 continue;   // don't copy over template.json
@@ -84,7 +84,7 @@ namespace Valdo.TemplateEngine {
             // substitute path name
             var project_child_path_relative = /(?<!\$)\${(\w+)}/m
                 .replace_eval (template_child_path_relative, template_child_path_relative.length, 0, 0, (match_info, result) => {
-                    string variable_name = (!)match_info.fetch (1);
+                    string variable_name = (!) match_info.fetch (1);
 
                     if (variable_name in substitutions) {
                         result.append (substitutions[variable_name]);
@@ -106,7 +106,7 @@ namespace Valdo.TemplateEngine {
             } else {
                 // create the parent directory of the file
                 if (project_child_parentdir != null) {
-                    DirUtils.create_with_parents ((!) (/* FIXME: non-null */ (!)project_child_parentdir).get_path (), 0755);
+                    DirUtils.create_with_parents ((!) (/* FIXME: non-null */ (!) project_child_parentdir).get_path (), 0755);
                 }
 
                 // if this is not a template file, just copy it over
@@ -115,7 +115,7 @@ namespace Valdo.TemplateEngine {
                     template_child.copy (project_child, NONE);
                 } else {
                     // remove '.in' suffix if there is one
-                    var project_child_path = (!)project_child.get_path ();
+                    var project_child_path = (!) project_child.get_path ();
                     if (!project_child_path.has_suffix (".in"))
                         warning ("file template %s should have a `.in` suffix", template_child_path_relative);
                     var renamed_project_child = File.new_for_path (/\.in$/.replace (project_child_path, -1, 0, ""));
@@ -127,12 +127,12 @@ namespace Valdo.TemplateEngine {
         // perform template substitutions
         foreach (var template_file in template_files.get_keys_as_array ()) {
             string template_contents;
-            FileUtils.get_contents ((!)template_file.get_path (), out template_contents);
+            FileUtils.get_contents ((!) template_file.get_path (), out template_contents);
 
             // substitute variables
             template_contents = /(?<!\$)\${(\w+)}/m
                 .replace_eval (template_contents, template_contents.length, 0, 0, (match_info, result) => {
-                    string variable_name = (!)match_info.fetch (1);
+                    string variable_name = (!) match_info.fetch (1);
 
                     if (variable_name in substitutions) {
                         result.append (substitutions[variable_name].escape ().replace ("'", "\\'"));
