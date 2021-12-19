@@ -27,12 +27,10 @@ class Valdo.Value {
         }
     }
 
-    private List<string> _referenced_vars = new List<string> ();
-
     /**
      * The names of the variables referenced in the value pattern.
      */
-    public unowned List<string> referenced_vars { get { return _referenced_vars; } }
+    public List<string> referenced_vars { get; private set; default = new List<string> (); }
 
     private Substitution[] subs = {};
     private string value_pattern;
@@ -43,7 +41,7 @@ class Valdo.Value {
             MatchInfo match_info;
             // check whether `value_pattern` is a regex
             if (new Regex ("^\\/\\${(\\w+)}").match (value_pattern, 0, out match_info)) {
-                _referenced_vars.append ((!) match_info.fetch (1));
+                referenced_vars.append ((!) match_info.fetch (1));
                 MatchInfo submatch_info;
                 int end_pos;
                 if (match_info.fetch_pos (0, null, out end_pos)) {
@@ -61,7 +59,7 @@ class Valdo.Value {
                 MatchInfo var_match_info;
                 if (new Regex ("\\${(\\w+)}").match (value_pattern, 0, out var_match_info)) {
                     while (var_match_info.matches ()) {
-                        _referenced_vars.append ((!) var_match_info.fetch (1));
+                        referenced_vars.append ((!) var_match_info.fetch (1));
                         var_match_info.next ();
                     }
                 }
