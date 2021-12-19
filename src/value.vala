@@ -86,7 +86,7 @@ class Valdo.Value {
                 return "";
             }
 
-            string representation = /* FIXME: non-null */ (!)substitution;
+            string representation = /* FIXME: non-null */ (!) substitution;
             bool have_regex = false;
 
             for (var i = 0; i < subs.length; i++) {
@@ -107,7 +107,7 @@ class Valdo.Value {
             // substitute variables as they appear in the string
             try {
                 return /(?!<\$)\${(\w+)}/m.replace_eval (value_pattern, value_pattern.length, 0, 0, (match_info, result) => {
-                    string variable_name = (!)match_info.fetch (1);
+                    string variable_name = (!) match_info.fetch (1);
 
                     if (variable_name in substitutions) {
                         result.append (substitutions[variable_name]);

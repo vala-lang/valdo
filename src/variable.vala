@@ -55,7 +55,7 @@ class Valdo.Variable : Object, Json.Serializable {
         this.name = name;
         this.summary = summary;
         if (default != null)
-            this.default = new Value (/* FIXME: non-null */(!)default);
+            this.default = new Value (/* FIXME: non-null */(!) default);
         this.pattern = pattern;
     }
 
