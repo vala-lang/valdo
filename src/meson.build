@@ -17,7 +17,7 @@ executable('valdo',
   'main.vala',
   'template.vala',
   'templateengine.vala',
-  'value.vala',
+  'expression.vala',
   'variable.vala',
   dependencies: [deps],
   install: true)

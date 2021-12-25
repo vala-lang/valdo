@@ -23,25 +23,25 @@ class Valdo.Variable : Object, Json.Serializable {
     /**
      * The variable name to substitute
      */
-    public string name { get; set; }
+    public string name { get; construct set; }
 
     /**
      * A short description of the variable's meaning
      */
-    public string summary { get; protected set; default = ""; }
+    public string summary { get; construct; default = ""; }
 
     /**
      * The variable's default value, or `null`
      */
-    public Value? @default { get; protected set; default = null; }
+    public string? @default { get; construct; default = null; }
 
     /**
      * The pattern that the string must match, or `null` if any string is
      * accepted.
      */
-    public string? pattern { get; protected set; default = null; }
+    public string? pattern { get; construct; default = null; }
 
-    public bool auto { get; protected set; default = false; }
+    public bool auto { get; construct; default = false; }
 
     /**
      * Creates a new variable for substitutions.
@@ -51,33 +51,12 @@ class Valdo.Variable : Object, Json.Serializable {
      * @param default   the default value, or `null`
      * @param pattern   the pattern that the string must match
      */
-    public Variable (string name, string summary, string? default = null, string? pattern = null) {
-        this.name = name;
-        this.summary = summary;
-        if (default != null)
-            this.default = new Value (/* FIXME: non-null */(!) default);
-        this.pattern = pattern;
-    }
-
-    public override bool deserialize_property (string           property_name,
-                                               out GLib.Value   value,
-                                               ParamSpec        pspec,
-                                               Json.Node        node) {
-        switch (property_name) {
-        case "default":
-            var default_value = node.get_string ();
-            if (default_value == null) {
-                value = "";
-                warning ("can't deserealize property '%s' from template file", property_name);
-                return false;
-            }
-            value = new Valdo.Value ((!) default_value);
-            return true;
-        case "summary":
-        case "pattern":
-        case "auto":
-        default:
-            return default_deserialize_property (property_name, out value, pspec, node);
-        }
+    public Variable (string name, string summary, string? @default = null, string? pattern = null) {
+        Object (
+            name: name,
+            summary: summary,
+            @default: @default,
+            pattern: pattern
+        );
     }
 }
