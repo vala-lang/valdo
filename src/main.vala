@@ -25,7 +25,7 @@ namespace Valdo.Main {
     /**
      * Command-line options
      */
-     private const OptionEntry[] ENTRIES = {
+    private const OptionEntry[] ENTRIES = {
         { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
         { "list-templates", 'l', NONE, NONE, ref option_list_templates, "List available templates", null },
 
@@ -78,7 +78,14 @@ namespace Valdo.Main {
 
             foreach (var variable in template.variables.data) {
                 string value;
-                var default_value = variable.default?.substitute (variables);
+                string? default_value;
+                if (variable.default == null)
+                    default_value = null;
+                else
+                    default_value = Valdo.Expression.evaluate (
+                        (!) variable.default,
+                        variables
+                    );
 
                 while (true) {
                     /* Print prompt */
