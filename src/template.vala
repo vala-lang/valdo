@@ -56,7 +56,7 @@ class Valdo.Template : Object, Json.Serializable {
     /**
      * A list of input files (ending with `.in`) to be substituted.
      */
-    public GenericSet<string> inputs { get; protected set; }
+    public string[] inputs { get; protected set; }
 
     protected Template () {}
 
@@ -147,28 +147,6 @@ class Valdo.Template : Object, Json.Serializable {
             variable_array.prepend_val (new Variable ("PROJECT_DIR", "the folder name", "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/"));
             variable_array.prepend_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1", "^\\d+(\\.\\d+)*$"));
             variable_array.prepend_val (new Variable ("PROJECT_NAME", "the project name", null, "^[^\\\\\\/#?'\"\\n]+$"));
-
-            return true;
-        case "inputs":
-            var inputs = new GenericSet<string> (str_hash, str_equal);
-            value = inputs;
-
-            var inputs_array = node.get_node_type () == ARRAY
-                ? node.get_array ()
-                : null;
-            if (inputs_array == null) {
-                warning ("expected array for '%s' property", property_name);
-                return false;
-            }
-
-            inputs_array?.foreach_element ((_, i, node) => {
-                var filename = node.get_string ();
-                if (filename == null) {
-                    warning ("expected string in inputs array");
-                    return;
-                }
-                inputs.add ((!) filename);
-            });
 
             return true;
         case "description":

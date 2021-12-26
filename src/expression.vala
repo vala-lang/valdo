@@ -46,8 +46,6 @@ namespace Valdo.Expression {
             error ("Invalid expression \'%s\': %s", expression, e.message);
         }
 
-        message ("RES IS %s", res);
-
         /* Then evaluate regular expressions */
         try {
             if (res[0] == '/' && res[res.length - 1] == '/')
