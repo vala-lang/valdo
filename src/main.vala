@@ -61,7 +61,7 @@ int list_templates (string[] args) {
             }
         }
 
-        foreach (unowned var name in templates.get_keys_as_array ())
+        foreach (unowned string name in templates.get_keys_as_array ())
             print ("%s%s - %s\n", name, string.nfill (max_template_name_len - name.length, ' '), templates[name]);
 
         for (var i = 0; i < errors.length; i++)
