@@ -59,4 +59,49 @@ class Valdo.Variable : Object, Json.Serializable {
             pattern: pattern
         );
     }
+
+    /**
+     * Regex used to validate email
+     *
+     * See https://stackoverflow.com/questions/201323/how-can-i-validate-an-email-address-using-a-regular-expression
+     */
+    const string EMAIL_REGEX = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+
+    /**
+     * Get list of pre-defined variables
+     */
+    public static Array<Variable> list_pre_defined () {
+        var variables = new Array<Variable> ();
+
+        /* Project info */
+        variables.append_val (new Variable ("PROJECT_NAME", "the project name", null, "^[^\\\\\\/#?'\"\\n]+$"));
+        variables.append_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1", "^\\d+(\\.\\d+)*$"));
+        variables.append_val (new Variable ("PROJECT_DIR", "the folder name", "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/"));
+
+        /* User's email */
+        var username = Environment.get_user_name ();
+        string email;
+        try {
+            Process.spawn_command_line_sync ("git config --get user.email", out email);
+            email = email.strip ();
+        } catch (SpawnError e) {
+            email = @"$username@$(Environment.get_host_name ())";
+        }
+        variables.append_val (new Variable ("USERADDR", "the user email", email, EMAIL_REGEX));
+
+        /* Username */
+        variables.append_val (new Variable ("USERNAME", "the user name", username));
+
+        /* Get user's real name */
+        string realname;
+        try {
+            Process.spawn_command_line_sync ("git config --get user.name", out realname);
+            realname = realname.strip ();
+        } catch (SpawnError e) {
+            realname = Environment.get_real_name ();
+        }
+        variables.append_val (new Variable ("AUTHOR", "the authors's real name", realname));
+
+        return variables;
+    }
 }
