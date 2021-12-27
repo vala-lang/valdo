@@ -76,7 +76,11 @@ namespace Valdo.Main {
 
             stdout.printf ("Creating %s\n", template.description);
 
-            foreach (var variable in template.variables.data) {
+            var vars = Variable.list_pre_defined ();
+            foreach (var variable in template.variables.data)
+                vars.append_val (variable);
+
+            foreach (var variable in vars.data) {
                 string value;
                 string? default_value;
                 if (variable.default == null)
@@ -108,7 +112,7 @@ namespace Valdo.Main {
 
                     /* User sent EOF */
                     if (user_input == null) {
-                        stderr.printf ("\nProject initialization was terminated by user");
+                        stderr.printf ("\nProject initialization was terminated by user\n");
                         return false;
                     }
 
@@ -133,7 +137,7 @@ namespace Valdo.Main {
                     break;
                 }
 
-                variables[variable.name] = /* FIXME: non-null */ value;
+                variables[variable.name] = value;
             }
 
             /* Now apply the template to the new directory */

@@ -31,13 +31,6 @@ errordomain Valdo.TemplateError {
  */
 class Valdo.Template : Object, Json.Serializable {
     /**
-     * Regex used to validate email
-     *
-     * See https://stackoverflow.com/questions/201323/how-can-i-validate-an-email-address-using-a-regular-expression
-     */
-    const string EMAIL_REGEX = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
-
-    /**
      * The directory where this template resides
      */
     public File directory { get; protected set; }
@@ -48,8 +41,7 @@ class Valdo.Template : Object, Json.Serializable {
     public string description { get; protected set; }
 
     /**
-     * Maps variable names to their description. The variable name is
-     * recognized in the form `${VARIABLE}` inside a `.in` file.
+     * Array of template-specific variables
      */
     public Array<Variable> variables { get; protected set; }
 
@@ -57,8 +49,6 @@ class Valdo.Template : Object, Json.Serializable {
      * A list of input files (ending with `.in`) to be substituted.
      */
     public string[] inputs { get; protected set; }
-
-    protected Template () {}
 
     /**
      * Deserializes a {@link Valdo.Template} from a JSON file located at
@@ -85,10 +75,10 @@ class Valdo.Template : Object, Json.Serializable {
         return (Template) object;
     }
 
-    public override bool deserialize_property (string           property_name,
-                                               out GLib.Value   value,
-                                               GLib.ParamSpec   pspec,
-                                               Json.Node        node) {
+    public override bool deserialize_property (string    property_name,
+                                               out Value value,
+                                               ParamSpec pspec,
+                                               Json.Node node) {
         switch (property_name) {
         case "variables":
             var variable_array = new Array<Variable> ();
@@ -97,59 +87,26 @@ class Valdo.Template : Object, Json.Serializable {
             var variables = node.get_node_type () == OBJECT
                 ? node.get_object ()
                 : null;
+
             if (variables == null) {
                 critical ("expected dictionary for '%s' property", property_name);
                 return false;
             }
 
-            /* Load template-specific variables */
-            variables?.foreach_member ((_, variable_name, node) => {
+            ((!) variables).foreach_member ((_, name, node) => {
                 var variable_obj = Json.gobject_deserialize (typeof (Variable), node) as Variable;
+
                 if (variable_obj == null) {
-                    warning ("failed to deserialize variable '%s'", variable_name);
+                    critical ("failed to deserialize variable '%s'", name);
                     return;
                 }
+
                 var variable = (!) variable_obj;
-                variable.name = variable_name;
-                if (variable.auto && variable.default == null) {
-                    warning ("auto variable '%s' must have a default value", variable_name);
-                }
-                variable_array.append_val ((!) variable);
+                variable.name = name;
+
+                variable_array.append_val (variable);
             });
-
-            /* Load pre-defined variable */
-
-            /* Real name */
-            string realname;
-            try {
-                Process.spawn_command_line_sync ("git config --get user.name", out realname);
-                realname = realname.strip ();
-            } catch (SpawnError e) {
-                realname = Environment.get_real_name ();
-            }
-            variable_array.prepend_val (new Variable ("AUTHOR", "the authors's real name", realname));
-
-            /* Username */
-            var username = Environment.get_user_name ();
-            variable_array.prepend_val (new Variable ("USERNAME", "the user name", username));
-
-            /* Email */
-            string email;
-            try {
-                Process.spawn_command_line_sync ("git config --get user.email", out email);
-                email = email.strip ();
-            } catch (SpawnError e) {
-                email = @"$username@$(Environment.get_host_name ())";
-            }
-            variable_array.prepend_val (new Variable ("USERADDR", "the user email", email, EMAIL_REGEX));
-
-            /* Project info */
-            variable_array.prepend_val (new Variable ("PROJECT_DIR", "the folder name", "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/"));
-            variable_array.prepend_val (new Variable ("PROJECT_VERSION", "the project version", "0.0.1", "^\\d+(\\.\\d+)*$"));
-            variable_array.prepend_val (new Variable ("PROJECT_NAME", "the project name", null, "^[^\\\\\\/#?'\"\\n]+$"));
-
             return true;
-        case "description":
         default:
             return default_deserialize_property (property_name, out value, pspec, node);
         }
