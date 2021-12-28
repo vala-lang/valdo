@@ -69,6 +69,8 @@ class Valdo.Variable : Object, Json.Serializable {
 
     /**
      * Get list of pre-defined variables
+     *
+     * @return array of pre-defined variables
      */
     public static Array<Variable> list_pre_defined () {
         var variables = new Array<Variable> ();

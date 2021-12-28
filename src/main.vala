@@ -59,6 +59,7 @@ namespace Valdo.Main {
      * Initialize project from template
      *
      * @param template_name the name of template to use
+     *
      * @return {@link true} on success, {@link false} otherwise
      */
     bool initialize_project (string template_name) {
@@ -194,6 +195,10 @@ namespace Valdo.Main {
 
     /**
      * Application entry point
+     *
+     * @param args command-line arguments
+     *
+     * @return result code
      */
     int main (string[] args) {
         APP_NAME = args[0];
