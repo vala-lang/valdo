@@ -19,13 +19,5 @@
             "default": "/${PROJECT_NAME}/\\W+/;/^;+//\\w+/\\L\\0\\E/[^;]$/\\0;/",
             "pattern": "^(\\w+;)+$"
         }
-    },
-    "inputs": [
-        "src/Application.vala.in",
-        "data/com.github.${USERNAME}.${PROGRAM_NAME}.desktop.in",
-        "data/com.github.${USERNAME}.${PROGRAM_NAME}.appdata.xml.in",
-        "com.github.${USERNAME}.${PROGRAM_NAME}.yml.in",
-        "meson.build.in",
-        "README.md.in"
-    ]
+    }
 }

@@ -46,11 +46,6 @@ class Valdo.Template : Object, Json.Serializable {
     public Array<Variable> variables { get; protected set; }
 
     /**
-     * A list of input files (ending with `.in`) to be substituted.
-     */
-    public string[] inputs { get; protected set; }
-
-    /**
      * Deserializes a {@link Valdo.Template} from a JSON file located at
      * `<directory>/template.json`
      */

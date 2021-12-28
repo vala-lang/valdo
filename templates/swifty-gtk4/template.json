@@ -16,12 +16,5 @@
       "default": "com.${USERNAME}.${NAMESPACE}",
       "pattern": "^\\w+(\\.\\w+)*$"
     }
-  },
-  "inputs": [
-    "Sources/Main.vala.in",
-    "Sources/MainWindow.vala.in",
-    "Sources/meson.build.in",
-    "meson.build.in",
-    "README.md.in"
-  ]
+  }
 }

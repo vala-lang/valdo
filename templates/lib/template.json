@@ -25,11 +25,5 @@
             "default": "/${LIBRARY_NAME}/-/_/",
             "auto": true
         }
-    },
-    "inputs": [
-        "src/library.vala.in",
-        "src/meson.build.in",
-        "meson.build.in",
-        "README.md.in"
-    ]
+    }
 }

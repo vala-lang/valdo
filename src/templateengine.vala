@@ -72,7 +72,7 @@ namespace Valdo.TemplateEngine {
         foreach (var template_child_info in files_list.get_keys_as_array ()) {
             var file_type = /* FIXME: non-null */ ((!) template_child_info).get_file_type ();
             if (!(file_type == REGULAR || file_type == SYMBOLIC_LINK ||
-                  file_type == SHORTCUT || file_type ==DIRECTORY))
+                  file_type == SHORTCUT || file_type == DIRECTORY))
                 continue;
 
             var template_child = files_list[template_child_info];
@@ -109,18 +109,7 @@ namespace Valdo.TemplateEngine {
                     DirUtils.create_with_parents ((!) (/* FIXME: non-null */ (!) project_child_parentdir).get_path (), 0755);
                 }
 
-                // if this is not a template file, just copy it over
-                if (!(template_child_path_relative in template.inputs)) {
-                    // TODO: show file copy progress
-                    template_child.copy (project_child, NONE);
-                } else {
-                    // remove '.in' suffix if there is one
-                    var project_child_path = (!) project_child.get_path ();
-                    if (!project_child_path.has_suffix (".in"))
-                        warning ("file template %s should have a `.in` suffix", template_child_path_relative);
-                    var renamed_project_child = File.new_for_path (/\.in$/.replace (project_child_path, -1, 0, ""));
-                    template_files[template_child] = renamed_project_child;
-                }
+                template_files[template_child] = project_child;
             }
         }
 
