@@ -18,35 +18,42 @@
 
 namespace Valdo.Expression {
     /**
-     * Evaluate expression in string
+     * Expand variables in string
      */
-    public static string evaluate (string expression, HashTable<string, string> variables) {
-        var res = expression;
-
-        /* First, replace variables with their values */
+    public string expand_variables (string str, HashTable<string, string> variables) {
+        var res = str;
         try {
-            res = /(?<!\$)\$\{(?<variable>[A-Za-z_0-9]+)\}/.replace_eval (
-                expression,
-                expression.length,
-                0,
-                0,
-                (match, res) => {
-                    var variable = (!) match.fetch_named ("variable");
+            res = /(?<prefix>([^$]|^)(\$\$)*)\$\{(?<variable>\w+)\}/.replace_eval (str, str.length, 0, 0, (match, res) => {
+                var variable = (!) match.fetch_named ("variable");
 
-                    if (variable in variables) {
-                        res.append (variables[variable]);
-                    } else {
-                        error ("Variable \'%s\' used in expression \'%s\' doesn't exists", variable, expression);
-                    }
-
+                if (!(variable in variables)) {
+                    critical ("Variable \'%s\' doesn't exists", variable);
                     return false;
                 }
-            );
-        } catch (RegexError e) {
-            error ("Invalid expression \'%s\': %s", expression, e.message);
-        }
 
-        /* Then evaluate regular expressions */
+                var body = (!) variables[variable];
+
+                res.append_printf (
+                    "%s%s",
+                    (!) match.fetch_named ("prefix"),
+                    body
+                );
+
+                return false;
+            });
+        } catch (RegexError e) {
+            critical ("Can't expand variables: %s", e.message);
+        }
+        return res;
+    }
+
+
+    /**
+     * Evaluate expression in string
+     */
+    public string evaluate (string expression, HashTable<string, string> variables) {
+        var res = expression;
+        /* Evaluate regular expressions */
         try {
             if (res[0] == '/' && res[res.length - 1] == '/')
                 res = res[1:-1];
@@ -66,9 +73,9 @@ namespace Valdo.Expression {
                     (match, builder) => {
                         matches = true;
 
-                        var input_string = ((!) match.fetch_named ("input")).replace ("\\/", "/");
+                        var input_string = expand_variables (((!) match.fetch_named ("input")).replace ("\\/", "/"), variables);
                         var regex_string = ((!) match.fetch_named ("regex")).replace ("\\/", "/");
-                        var replacement = ((!) match.fetch_named ("replacement")).replace ("\\/", "/");
+                        var replacement = expand_variables (((!) match.fetch_named ("replacement")).replace ("\\/", "/"), variables);
 
                         try {
                             var regex = new Regex (regex_string);

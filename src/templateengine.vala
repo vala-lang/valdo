@@ -54,12 +54,12 @@ namespace Valdo.TemplateEngine {
      * @param template      the template to apply
      * @param current_dir   the current directory
      * @param project_name  the new project's name
-     * @param substitutions the variable substitutions (variables => their new values)
+     * @param variables the variable substitutions (variables => their new values)
      */
     void apply_template (Template                   template,
                          File                       current_dir,
                          string                     project_name,
-                         HashTable<string, string>  substitutions) throws Error {
+                         HashTable<string, string>  variables) throws Error {
         // maps template file to its destination file
         var template_files = new HashTable<File, File> (null, null);
 
@@ -82,20 +82,7 @@ namespace Valdo.TemplateEngine {
                 continue;   // don't copy over template.json
 
             // substitute path name
-            var project_child_path_relative = /(?<!\$)\${(\w+)}/m
-                .replace_eval (template_child_path_relative, template_child_path_relative.length, 0, 0, (match_info, result) => {
-                    string variable_name = (!) match_info.fetch (1);
-
-                    if (variable_name in substitutions) {
-                        result.append (substitutions[variable_name]);
-                    } else {
-                        warning ("could not substitute `${%s}` in %s - prepend a `$` if this was intentional",
-                                 variable_name, template_child_path_relative);
-                        result.append (variable_name);
-                    }
-
-                    return false;
-                });
+            var project_child_path_relative = Expression.expand_variables (template_child_path_relative, variables);
 
             var project_child = project_dir.resolve_relative_path (project_child_path_relative);
             var project_child_parentdir = project_child.get_parent ();
@@ -119,20 +106,7 @@ namespace Valdo.TemplateEngine {
             FileUtils.get_contents ((!) template_file.get_path (), out template_contents);
 
             // substitute variables
-            template_contents = /(?<!\$)\${(\w+)}/m
-                .replace_eval (template_contents, template_contents.length, 0, 0, (match_info, result) => {
-                    string variable_name = (!) match_info.fetch (1);
-
-                    if (variable_name in substitutions) {
-                        result.append (substitutions[variable_name].escape ().replace ("'", "\\'"));
-                    } else {
-                        warning ("could not substitute `${%s}` in %s - prepend a `$` if this was intentional",
-                            variable_name, (!) template_file.get_path ());
-                        result.append (variable_name);
-                    }
-
-                    return false;
-                });
+            template_contents = Expression.expand_variables (template_contents, variables);
 
             // now write to the new file
             var project_file = template_files[template_file];
