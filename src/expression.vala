@@ -19,8 +19,17 @@
 namespace Valdo.Expression {
     /**
      * Expand variables in string
+     *
+     * Variables must be in that form:  ${<variable name>}.
+     * To prevent variable expansion
+     * add another $ before.
+     *
+     * @param str string containing variables to expand
+     *
+     * @return string with variable values instead of variable names
      */
-    public string expand_variables (string str, HashTable<string, string> variables) {
+    public string expand_variables (string                    str,
+                                    HashTable<string, string> variables) {
         var res = str;
         try {
             res = /(?<prefix>([^$]|^)(\$\$)*)\$\{(?<variable>\w+)\}/.replace_eval (str, str.length, 0, 0, (match, res) => {
@@ -50,8 +59,19 @@ namespace Valdo.Expression {
 
     /**
      * Evaluate expression in string
+     *
+     * Expression must have this form:
+     * `value/regex/replacement/regex/replacement/...`
+     *
+     * Also variables can be used in expression.
+     *
+     * @param expression expression to evaluate
+     * @param variables  hash table of variable names and values
+     *
+     * @return result of expression evaluating
      */
-    public string evaluate (string expression, HashTable<string, string> variables) {
+    public string evaluate (string                    expression,
+                            HashTable<string, string> variables) {
         var res = expression;
         /* Evaluate regular expressions */
         try {

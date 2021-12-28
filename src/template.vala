@@ -48,6 +48,10 @@ class Valdo.Template : Object, Json.Serializable {
     /**
      * Deserializes a {@link Valdo.Template} from a JSON file located at
      * `<directory>/template.json`
+     *
+     * @param template_dir directory containing the template
+     *
+     * @return loaded template
      */
     public static Template new_from_directory (File template_dir) throws Error {
         var template_json = template_dir.get_child ("template.json");

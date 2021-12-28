@@ -19,6 +19,11 @@
 namespace Valdo.TemplateEngine {
     /**
      * Lists all files in a directory recursively.
+     *
+     * @param dir   directory
+     * @param found files that are already found
+     *
+     * @return hash table containing found files and their info
      */
     public HashTable<FileInfo, File> list_files (File                       dir,
                                                  HashTable<FileInfo, File>  found = new HashTable<FileInfo, File> (null, null)) throws Error {
@@ -55,6 +60,8 @@ namespace Valdo.TemplateEngine {
      * @param current_dir   the current directory
      * @param project_name  the new project's name
      * @param variables the variable substitutions (variables => their new values)
+     *
+     * @return is succesful
      */
     bool apply_template (Template                   template,
                          File                       current_dir,
