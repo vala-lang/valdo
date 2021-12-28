@@ -32,27 +32,30 @@ namespace Valdo.Expression {
                                     HashTable<string, string> variables) {
         var res = str;
         try {
-            res = /(?<prefix>([^$]|^)(\$\$)*)\$\{(?<variable>\w+)\}/.replace_eval (str, str.length, 0, 0, (match, res) => {
-                var variable = (!) match.fetch_named ("variable");
+            /* Expand variables */
+            res = /(?<!\$)\$\{(\w+)\}/.replace_eval (str, str.length, 0, 0, (match, builder) => {
+                var variable = (!) match.fetch (1);
 
                 if (!(variable in variables)) {
                     critical ("Variable \'%s\' doesn't exists", variable);
                     return false;
                 }
 
-                var body = (!) variables[variable];
+                builder.append (variables[variable]);
 
-                res.append_printf (
-                    "%s%s",
-                    (!) match.fetch_named ("prefix"),
-                    body
-                );
+                return false;
+            });
+
+            /* Unespace escaped variables */
+            res = /\$(\$\{(\w+)\})/.replace_eval (res, res.length, res.length, 0, (match, builder) => {
+                builder.append ((!) match.fetch (1));
 
                 return false;
             });
         } catch (RegexError e) {
             critical ("Can't expand variables: %s", e.message);
         }
+
         return res;
     }
 
