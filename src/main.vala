@@ -142,7 +142,7 @@ namespace Valdo.Main {
 
             /* Now apply the template to the new directory */
             string project_name = variables["PROJECT_DIR"];
-            Valdo.TemplateEngine.apply_template (
+            return Valdo.TemplateEngine.apply_template (
                 template,
                 File.new_for_path (Environment.get_current_dir ()),
                 project_name,
@@ -151,8 +151,6 @@ namespace Valdo.Main {
         } catch (Error e) {
             error ("Can't initialize project from template: %s", e.message);
         }
-
-        return true;
     }
 
     /**
