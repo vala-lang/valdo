@@ -171,7 +171,7 @@ namespace Valdo.Main {
 
             FileInfo? fileinfo;
             while ((fileinfo = enumerator.next_file ()) != null) {
-                var template_name = fileinfo?.get_name () ?? "";
+                var template_name = ((!) fileinfo).get_name ();
                 var template = Valdo.Template.new_from_directory (File.new_build_filename (
                     Config.TEMPLATES_DIR, template_name
                 ));
