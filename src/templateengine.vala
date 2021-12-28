@@ -21,26 +21,26 @@ namespace Valdo.TemplateEngine {
      * Lists all files in a directory recursively.
      */
     public HashTable<FileInfo, File> list_files (File                       dir,
-                                                 Cancellable?               cancellable = null,
                                                  HashTable<FileInfo, File>  found = new HashTable<FileInfo, File> (null, null)) throws Error {
         FileEnumerator enumerator = dir.enumerate_children (
             FileAttribute.ID_FILE,
-            NOFOLLOW_SYMLINKS,
-            cancellable);
+            NOFOLLOW_SYMLINKS
+        );
 
         try {
             FileInfo? finfo;
-            while ((finfo = enumerator.next_file (cancellable)) != null) {
-                if (/* FIXME: non-null */ ((!) finfo).get_file_type () == DIRECTORY) {
+            while ((finfo = enumerator.next_file ()) != null) {
+                var fileinfo = (!) finfo;
+                if (fileinfo.get_file_type () == DIRECTORY) {
                     list_files (
-                        enumerator.get_child (/* FIXME: non-null */ (!) finfo),
-                        cancellable,
-                        found);
+                        enumerator.get_child (fileinfo),
+                        found
+                    );
                 }
-                found[(!) finfo] = enumerator.get_child ((!) finfo);
+                found[fileinfo] = enumerator.get_child (fileinfo);
             }
         } catch (Error e) {
-            warning ("could not get next file in dir %s", (!) dir.get_path ());
+            warning ("Could not get next file in dir %s", (!) dir.get_path ());
         }
 
         return found;
@@ -56,64 +56,59 @@ namespace Valdo.TemplateEngine {
      * @param project_name  the new project's name
      * @param variables the variable substitutions (variables => their new values)
      */
-    void apply_template (Template                   template,
+    bool apply_template (Template                   template,
                          File                       current_dir,
                          string                     project_name,
                          HashTable<string, string>  variables) throws Error {
-        // maps template file to its destination file
-        var template_files = new HashTable<File, File> (null, null);
-
-        // create the new project directory
+        /* Create the new project directory */
         var project_dir = current_dir.get_child (project_name);
+        if (project_dir.query_exists ()) {
+            stderr.printf ("Directory already exists\n");
+            return false;
+        }
         project_dir.make_directory ();
 
-        // copy everything into it
+        /* Copy everything into it */
         var files_list = list_files (template.directory);
-        foreach (var template_child_info in files_list.get_keys_as_array ()) {
-            var file_type = /* FIXME: non-null */ ((!) template_child_info).get_file_type ();
+        foreach (var fileinfo in files_list.get_keys_as_array ()) {
+            var file_type = ((!) fileinfo).get_file_type ();
             if (!(file_type == REGULAR || file_type == SYMBOLIC_LINK ||
                   file_type == SHORTCUT || file_type == DIRECTORY))
                 continue;
 
-            var template_child = files_list[template_child_info];
-            var template_child_path_relative = (!) template.directory.get_relative_path (template_child);
+            var template_file = files_list[fileinfo];
+            var relative_path = (!) template.directory.get_relative_path (template_file);
 
-            if (template_child_path_relative == "template.json")
-                continue;   // don't copy over template.json
+            if (relative_path == "template.json")
+                continue;   // Don't copy over template.json
 
-            // substitute path name
-            var project_child_path_relative = Expression.expand_variables (template_child_path_relative, variables);
+            /* Substitute path name */
+            relative_path = Expression.expand_variables (relative_path, variables);
 
-            var project_child = project_dir.resolve_relative_path (project_child_path_relative);
-            var project_child_parentdir = project_child.get_parent ();
+            var project_file = project_dir.resolve_relative_path (relative_path);
 
             if (file_type == DIRECTORY) {
-                // create an empty directory
-                DirUtils.create_with_parents ((!) project_child.get_path (), 0755);
-            } else {
-                // create the parent directory of the file
-                if (project_child_parentdir != null) {
-                    DirUtils.create_with_parents ((!) (/* FIXME: non-null */ (!) project_child_parentdir).get_path (), 0755);
-                }
-
-                template_files[template_child] = project_child;
+                /* Create an empty directory */
+                DirUtils.create_with_parents ((!) project_file.get_path (), 0755);
+                continue;
             }
+
+            /* Create the parent directory of the file */
+            var parentdir = project_file.get_parent ();
+            if (parentdir != null) {
+                DirUtils.create_with_parents ((!) ((!) parentdir).get_path (), 0755);
+            }
+
+            /* Perform template substitutions */
+            string file_contents;
+            FileUtils.get_contents ((!) template_file.get_path (), out file_contents);
+
+            file_contents = Expression.expand_variables (file_contents, variables);
+
+            project_file.create (NONE).write_all (file_contents.data, null);
         }
 
-        // perform template substitutions
-        foreach (var template_file in template_files.get_keys_as_array ()) {
-            string template_contents;
-            FileUtils.get_contents ((!) template_file.get_path (), out template_contents);
-
-            // substitute variables
-            template_contents = Expression.expand_variables (template_contents, variables);
-
-            // now write to the new file
-            var project_file = template_files[template_file];
-            project_file.create (NONE).write_all (template_contents.data, null);
-        }
-
-        // finally, initialize the git repository (we don't care if this part fails)
+        /* Finally, initialize the git repository (we don't care if this part fails) */
         if (Environment.find_program_in_path ("git") != null) {
             try {
                 Process.spawn_sync (
@@ -123,11 +118,13 @@ namespace Valdo.TemplateEngine {
                     SEARCH_PATH | SEARCH_PATH_FROM_ENVP,
                     null
                 );
-                // create a new gitignore for meson and c files
+                /* Create a new gitignore for meson and c files */
                 project_dir.get_child (".gitignore").create (NONE).write_all ("build/\n*~".data, null);
             } catch (Error e) {
                 warning ("could not initialize a git repository - %s", e.message);
             }
         }
+
+        return true;
     }
 }
