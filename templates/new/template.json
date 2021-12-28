@@ -6,10 +6,5 @@
             "default": "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/",
             "pattern": "^[[:word:]-]+$"
         }
-    },
-    "inputs": [
-        "src/meson.build.in",
-        "meson.build.in",
-        "README.md.in"
-    ]
+    }
 }
