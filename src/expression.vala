@@ -47,11 +47,7 @@ namespace Valdo.Expression {
             });
 
             /* Unespace escaped variables */
-            res = /\$(\$\{(\w+)\})/.replace_eval (res, res.length, res.length, 0, (match, builder) => {
-                builder.append ((!) match.fetch (1));
-
-                return false;
-            });
+            res = /\$(\$\{(\w+)\})/.replace (res, res.length, 0, "\\1");
         } catch (RegexError e) {
             critical ("Can't expand variables: %s", e.message);
         }
