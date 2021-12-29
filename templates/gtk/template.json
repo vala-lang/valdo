@@ -6,5 +6,13 @@
             "default": "/${PROJECT_NAME}/\\w+/\\L\\0\\E/\\W+/-/",
             "pattern": "^[[:word:]-]+$"
         }
-    }
+    },
+    "templates": [
+        "meson.build",
+        "README.md",
+        "src/App.vala",
+        "src/MainWindow.vala",
+        "ui/main-window.ui",
+        "ui/resources.xml"
+    ]
 }
