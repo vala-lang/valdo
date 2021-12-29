@@ -46,6 +46,11 @@ class Valdo.Template : Object, Json.Serializable {
     public Array<Variable> variables { get; protected set; }
 
     /**
+     * Array of files that must be treated as templates
+     */
+    public string[] templates { get; protected set; }
+
+    /**
      * Deserializes a {@link Valdo.Template} from a JSON file located at
      * `<directory>/template.json`
      *

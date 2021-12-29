@@ -19,5 +19,13 @@
             "default": "/${PROJECT_NAME}/\\W+/;/^;+//\\w+/\\L\\0\\E/[^;]$/\\0;/",
             "pattern": "^(\\w+;)+$"
         }
-    }
+    },
+    "templates": [
+        "com.github.${USERNAME}.${PROGRAM_NAME}.yml",
+        "meson.build",
+        "README.md",
+        "data/com.github.${USERNAME}.${PROGRAM_NAME}.appdata.xml",
+        "data/com.github.${USERNAME}.${PROGRAM_NAME}.desktop",
+        "src/Application.vala"
+    ]
 }

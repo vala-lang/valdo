@@ -25,5 +25,11 @@
             "default": "/${LIBRARY_NAME}/-/_/",
             "auto": true
         }
-    }
+    },
+    "templates": [
+        "meson.build",
+        "README.md",
+        "src/library.vala",
+        "src/meson.build"
+    ]
 }

@@ -16,5 +16,12 @@
       "default": "com.${USERNAME}.${NAMESPACE}",
       "pattern": "^\\w+(\\.\\w+)*$"
     }
-  }
+  },
+  "templates": [
+    "meson.build",
+    "README.md",
+    "Sources/Main.vala",
+    "Sources/MainWindow.vala",
+    "Sources/meson.build"
+  ]
 }

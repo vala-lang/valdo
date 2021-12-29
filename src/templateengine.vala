@@ -75,6 +75,12 @@ namespace Valdo.TemplateEngine {
         }
         project_dir.make_directory ();
 
+        /* Convert list of templates to hashmap
+           for more efficiency */
+        var template_files = new GenericSet<string> (str_hash, str_equal);
+        foreach (var file in template.templates)
+            template_files.add (file);
+
         /* Copy everything into it */
         var files_list = list_files (template.directory);
         foreach (var fileinfo in files_list.get_keys_as_array ()) {
@@ -90,9 +96,9 @@ namespace Valdo.TemplateEngine {
                 continue;   // Don't copy over template.json
 
             /* Substitute path name */
-            relative_path = Expression.expand_variables (relative_path, variables);
-
-            var project_file = project_dir.resolve_relative_path (relative_path);
+            var project_file = project_dir.resolve_relative_path (
+                Expression.expand_variables (relative_path, variables)
+            );
 
             if (file_type == DIRECTORY) {
                 /* Create an empty directory */
@@ -106,13 +112,18 @@ namespace Valdo.TemplateEngine {
                 DirUtils.create_with_parents ((!) ((!) parentdir).get_path (), 0755);
             }
 
-            /* Perform template substitutions */
-            string file_contents;
-            FileUtils.get_contents ((!) template_file.get_path (), out file_contents);
+            if (relative_path in template_files) {
+                /* Perform template substitutions */
+                string file_contents;
+                FileUtils.get_contents ((!) template_file.get_path (), out file_contents);
 
-            file_contents = Expression.expand_variables (file_contents, variables);
+                file_contents = Expression.expand_variables (file_contents, variables);
 
-            project_file.create (NONE).write_all (file_contents.data, null);
+                project_file.create (NONE).write_all (file_contents.data, null);
+            } else {
+                /* Just copy file if it's not template */
+                template_file.copy (project_file, TARGET_DEFAULT_PERMS);
+            }
         }
 
         /* Finally, initialize the git repository (we don't care if this part fails) */
