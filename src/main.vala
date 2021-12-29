@@ -27,7 +27,6 @@ namespace Valdo.Main {
      */
     private const OptionEntry[] ENTRIES = {
         { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
-        { "list-templates", 'l', NONE, NONE, ref option_list_templates, "List available templates", null },
 
         /* Non-named argument is treated as name of template to use */
         { OPTION_REMAINING, 0, NONE, STRING_ARRAY, ref non_option_arguments, (string) null, "TEMPLATE" },
@@ -40,11 +39,6 @@ namespace Valdo.Main {
      * Whether --version option is used
      */
     private bool option_version;
-
-    /**
-     * Whether --list-templates option is user
-     */
-    private bool option_list_templates;
 
     /**
      * Non-option command-line arguments
@@ -224,15 +218,15 @@ namespace Valdo.Main {
             return 0;
         }
 
-        /* -l/--list-templates */
-        if (option_list_templates) {
+        /* List tempaltes when are no arguments provided */
+        if (non_option_arguments.length == 0) {
             list_templates ();
             return 0;
         }
 
         /* Quit if not one template specified */
-        if (non_option_arguments.length != 1) {
-            stderr.printf ("%s: missing template name\n", APP_NAME);
+        if (non_option_arguments.length > 1) {
+            stderr.printf ("Usage: %s [TEMPLATE NAME]\n", APP_NAME);
             stderr.printf ("Try '%s --help' for more information\n", APP_NAME);
             return 1;
         }
