@@ -80,11 +80,15 @@ namespace Valdo.Main {
                 string? default_value;
                 if (variable.default == null)
                     default_value = null;
-                else
-                    default_value = Valdo.Expression.evaluate (
-                        (!) variable.default,
+                else {
+                    default_value = Valdo.Expression.expand_variables (
+                        Valdo.Expression.evaluate (
+                            (!) variable.default,
+                            variables
+                        ),
                         variables
                     );
+                }
 
                 while (true) {
                     /* Print prompt */
