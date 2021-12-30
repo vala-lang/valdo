@@ -33,15 +33,15 @@ class Valdo.Variable : Object, Json.Serializable {
     /**
      * The variable's default value, or `null`
      */
-    public string? @default { get; construct; default = null; }
+    public string? @default { get; construct; }
 
     /**
      * The pattern that the string must match, or `null` if any string is
      * accepted.
      */
-    public string? pattern { get; construct; default = null; }
+    public string? pattern { get; construct; }
 
-    public bool auto { get; construct; default = false; }
+    public bool auto { get; construct; }
 
     /**
      * Creates a new variable for substitutions.
