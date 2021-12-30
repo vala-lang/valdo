@@ -29,7 +29,7 @@ namespace Valdo.TemplateEngine {
                                                  HashTable<FileInfo, File>  found = new HashTable<FileInfo, File> (null, null)) throws Error {
         FileEnumerator enumerator = dir.enumerate_children (
             FileAttribute.ID_FILE,
-            NOFOLLOW_SYMLINKS
+            FileQueryInfoFlags.NOFOLLOW_SYMLINKS
         );
 
         try {
@@ -119,10 +119,10 @@ namespace Valdo.TemplateEngine {
 
                 file_contents = Expression.expand_variables (file_contents, variables);
 
-                project_file.create (NONE).write_all (file_contents.data, null);
+                project_file.create (FileCreateFlags.NONE).write_all (file_contents.data, null);
             } else {
                 /* Just copy file if it's not template */
-                template_file.copy (project_file, TARGET_DEFAULT_PERMS);
+                template_file.copy (project_file, FileCopyFlags.TARGET_DEFAULT_PERMS);
             }
         }
 
@@ -133,11 +133,11 @@ namespace Valdo.TemplateEngine {
                     project_dir.get_path (),
                     {"git", "init"},
                     Environ.get (),
-                    SEARCH_PATH | SEARCH_PATH_FROM_ENVP,
+                    SpawnFlags.SEARCH_PATH | SpawnFlags.SEARCH_PATH_FROM_ENVP,
                     null
                 );
                 /* Create a new gitignore for meson and c files */
-                project_dir.get_child (".gitignore").create (NONE).write_all ("build/\n*~".data, null);
+                project_dir.get_child (".gitignore").create (FileCreateFlags.NONE).write_all ("build/\n*~".data, null);
             } catch (Error e) {
                 warning ("could not initialize a git repository - %s", e.message);
             }
