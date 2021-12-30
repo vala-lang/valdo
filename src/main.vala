@@ -185,7 +185,7 @@ namespace Valdo.Main {
             stdout.printf ("Available templates:\n");
             stdout.printf ("--------------------\n");
 
-            foreach (unowned var name in templates.get_keys_as_array ())
+            foreach (unowned string name in templates.get_keys_as_array ())
                 print ("%s%s - %s\n", name, string.nfill (max_template_name_len - name.length, ' '), templates[name]);
         } else {
             stdout.printf ("There are no templates available.\n");
