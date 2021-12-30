@@ -26,10 +26,10 @@ namespace Valdo.Main {
      * Command-line options
      */
     private const OptionEntry[] ENTRIES = {
-        { "version",        'v', NONE, NONE, ref option_version,        "Display version number",   null },
+        { "version",        'v', OptionFlags.NONE, OptionArg.NONE, ref option_version,        "Display version number",   null },
 
         /* Non-named argument is treated as name of template to use */
-        { OPTION_REMAINING, 0, NONE, STRING_ARRAY, ref non_option_arguments, (string) null, "TEMPLATE" },
+        { OPTION_REMAINING,   0, OptionFlags.NONE, OptionArg.STRING_ARRAY, ref non_option_arguments, (string) null, "TEMPLATE" },
 
         /* Array terminator */
         { }
@@ -163,7 +163,7 @@ namespace Valdo.Main {
         try {
             var enumerator = templates_dir.enumerate_children (
                 FileAttribute.ID_FILE,
-                NONE
+                FileQueryInfoFlags.NONE
             );
 
             FileInfo? fileinfo;
