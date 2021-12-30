@@ -112,6 +112,34 @@ class Valdo.Template : Object, Json.Serializable {
                 variable_array.append_val (variable);
             });
             return true;
+
+        case "templates": 	// workaround for Json-GLib < 1.5.2 (Ubuntu 20.04 / eOS 6.1)
+            if (node.get_node_type() != ARRAY) {
+                critical ("expected array for '%s' property", property_name);
+                value = new string[]{};
+                return false;
+            }
+            string[] templates = {};
+            var elements = node.get_array ();
+            ((!) elements).foreach_element ((_, index, elem) => {
+                if (elem.get_value_type () != typeof (string)) {
+                    critical ("expected string in array '%s'", property_name);
+                    return;
+                }
+                templates += (!) elem.get_string ();
+            });
+            value = templates;
+            return true;
+
+        case "description": 	// workaround for Json-GLib < 1.5.2 (Ubuntu 20.04 / eOS 6.1)
+            if (node.get_value_type () != typeof (string)) {
+                critical ("expected string for '%s' property", property_name);
+                value = new string[]{};
+                return false;
+            }
+            value = (!) node.get_string ();
+            return true;
+
         default:
             return default_deserialize_property (property_name, out value, pspec, node);
         }
