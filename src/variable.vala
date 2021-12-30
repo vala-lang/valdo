@@ -82,12 +82,15 @@ class Valdo.Variable : Object, Json.Serializable {
 
         /* User's email */
         var username = Environment.get_user_name ();
-        string email;
+        string email = @"$username@$(Environment.get_host_name ())";
         try {
-            Process.spawn_command_line_sync ("git config --get user.email", out email);
-            email = email.strip ();
+            string git_email;
+            Process.spawn_command_line_sync ("git config --get user.email", out git_email);
+            git_email = git_email.strip ();
+            if (git_email.length > 0)
+                email = git_email;
         } catch (SpawnError e) {
-            email = @"$username@$(Environment.get_host_name ())";
+            /* do nothing */
         }
         variables.append_val (new Variable ("USERADDR", "the user email", email, EMAIL_REGEX));
 
@@ -95,12 +98,15 @@ class Valdo.Variable : Object, Json.Serializable {
         variables.append_val (new Variable ("USERNAME", "the user name", username));
 
         /* Get user's real name */
-        string realname;
+        string realname = Environment.get_real_name ();
         try {
-            Process.spawn_command_line_sync ("git config --get user.name", out realname);
-            realname = realname.strip ();
+            string git_realname;
+            Process.spawn_command_line_sync ("git config --get user.name", out git_realname);
+            git_realname = git_realname.strip ();
+            if (git_realname.length > 0)
+                realname = git_realname;
         } catch (SpawnError e) {
-            realname = Environment.get_real_name ();
+            /* do nothing */
         }
         variables.append_val (new Variable ("AUTHOR", "the authors's real name", realname));
 
