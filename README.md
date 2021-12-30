@@ -27,19 +27,18 @@ Here is what a template might look like:
 
 ```
 .
-├── meson.build.in
-├── README.md.in
+├── meson.build
+├── README.md
 ├── src
 │   ├── main.vala
-│   └── meson.build.in
+│   └── meson.build
 └── template.json
 
 1 directory, 5 files
 ```
 
-Each file ending with `.in` is a template file.
-
 Your `template.json` may start off looking like:
+
 ```json
 {
     "description": "a bare app, with minimal dependencies",
@@ -49,13 +48,16 @@ Your `template.json` may start off looking like:
             "default": "main"
         }
     },
-    "inputs": [
-        "src/meson.build.in",
-        "meson.build.in",
-        "README.md.in"
+    "templates": [
+        "src/meson.build",
+        "meson.build",
+        "README.md"
     ]
 }
 ```
+
+`"templates"` is a list of template files, containing variables to be
+substituted.
 
 `"variables"` is a dictionary mapping each variable name to a short
 description. Having a default value for a variable is optional. There are at
@@ -63,9 +65,9 @@ least two variables every template uses, `PROJECT_NAME` and `PROJECT_VERSION`,
 which you don't have to specify.
 
 For every variable listed, the template engine will substitute
-`${VARIABLE_NAME}` in each templated file listed in `"inputs"` after prompting
-the user. All other files in the template directory will be copied over
-unmodified. Templated files should end with `.in`.
+`${VARIABLE_NAME}` in each templated file. If a variable does not have a
+default value, Valdo will prompt the user. The rest of the files in the
+template directory will be copied over unmodified.
 
 **Once you're done, submit a PR to https://github.com/Prince781/valdo**
 
@@ -88,6 +90,11 @@ You can define a variable's default value in terms of another variable like so:
             "default": "/${API_NAMESPACE}/\\w+/\\L\\g<0>\\E/",
             "pattern": "^[[:word:]][[:word:]-]*$"
         },
+        "APP_ID": {
+            "summary": "the application ID",
+            "default": "com.${USERNAME}.${API_NAMESPACE}",
+            "pattern": "^\\w+(\\.\\w+)*$"
+        }
     }
 }
 ```
@@ -115,5 +122,5 @@ After converting everything to lowercase, then substitute "bob" for "greta".
 The substitutions will be applied in the order they appear, one after another.
 
 [^1]: You can specify `"auto": true` for the variable to make it completely
-  automatic, so there's no prompting of the user. This is useful when
-  generating variable names in build scripts, for example.
+  automatic, so there's no prompting the user. This is useful when generating
+  variable names in build scripts, for example.
