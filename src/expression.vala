@@ -1,6 +1,7 @@
 /* expression.vala
  *
  * Copyright 2021 Princeton Ferro <princetonferro@gmail.com>
+ * Copyright 2021 Gleb Smirnov <glebsmirnov0708@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
