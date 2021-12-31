@@ -115,10 +115,11 @@ namespace Valdo.Main {
                         stderr.printf ("\nProject initialization was terminated by user\n");
                         return false;
                     }
+                    user_input = ((!) user_input).strip ();
 
                     /* Use default if
                        value not specified */
-                    if (user_input == "") {
+                    if (((!) user_input).length == 0) {
                         if (default_value == null) {
                             stderr.printf ("Please, specify %s\n", variable.summary);
                             continue;
