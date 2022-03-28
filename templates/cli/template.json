@@ -11,10 +11,10 @@
             "default": "A Vala CLI Tool"
         }
     },
-    "inputs": [
-        "src/main.vala.in",
-        "src/meson.build.in",
-        "meson.build.in",
-        "README.md.in"
+    "templates": [
+        "src/main.vala",
+        "src/meson.build",
+        "meson.build",
+        "README.md"
     ]
 }
