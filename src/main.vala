@@ -201,7 +201,7 @@ namespace Valdo.Main {
      * @return result code
      */
     int main (string[] args) {
-        APP_NAME = args[0];
+        APP_NAME = args.length > 0 ? args[0] : "valdo";
 
         /* Parse command-line options */
         var ctx = new OptionContext ("- create a Vala project from a template");
