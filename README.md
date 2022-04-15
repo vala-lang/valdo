@@ -69,7 +69,7 @@ For every variable listed, the template engine will substitute
 default value, Valdo will prompt the user. The rest of the files in the
 template directory will be copied over unmodified.
 
-**Once you're done, submit a PR to https://github.com/Prince781/valdo**
+**Once you're done, submit a PR to https://github.com/vala-lang/valdo**
 
 ### Advanced template features
 
