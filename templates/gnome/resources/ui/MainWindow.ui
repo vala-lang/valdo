@@ -4,9 +4,9 @@
   <requires lib="libadwaita" version="1.0"/>
 
   <template class="${APP_NAMESPACE}MainWindow" parent="AdwApplicationWindow">
-    <property name="title" translatable="yes">${APP_TITLE}</property>
-    <property name="default-width">1000</property>
-    <property name="default-height">700</property>
+    <property name="title" translatable="yes">${APP_NAME}</property>
+    <property name="default-width">580</property>
+    <property name="default-height">450</property>
     <property name="icon-name">${APP_ID}</property>
     <child>
       <object class="GtkBox">
@@ -19,6 +19,16 @@
                 <property name="menu-model">action_menu</property>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label">
+            <property name="vexpand">true</property>
+            <property name="valign">center</property>
+            <property name="label" translatable="yes">Hello World!</property>
+            <style>
+              <class name="title-1"/>
+            </style>
           </object>
         </child>
       </object>
