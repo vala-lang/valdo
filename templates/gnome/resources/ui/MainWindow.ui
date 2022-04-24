@@ -12,9 +12,25 @@
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
-          <object class="AdwHeaderBar"></object>
+          <object class="AdwHeaderBar">
+            <child type="end">
+              <object class="GtkMenuButton">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">action_menu</property>
+              </object>
+            </child>
+          </object>
         </child>
       </object>
     </child>
   </template>
+
+  <menu id="action_menu">
+    <section>
+      <item>
+        <attribute name="label">_About ${APP_NAME}</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>

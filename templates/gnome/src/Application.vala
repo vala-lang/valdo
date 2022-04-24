@@ -7,7 +7,8 @@ namespace ${APP_NAMESPACE} {
         }
 
         static ActionEntry[] ACTION_ENTRIES = {
-            { "quit", quit }
+            { "quit", quit },
+            { "about", on_about_action }
         };
 
         static AccelEntry[] ACCEL_ENTRIES = {
@@ -37,6 +38,26 @@ namespace ${APP_NAMESPACE} {
                 win = new ${APP_NAMESPACE}.MainWindow (this);
             }
             win.present ();
+        }
+
+        private void on_about_action () {
+            const string? COPYRIGHT = "Copyright \xc2\xa9 ${AUTHOR}";
+
+            const string? AUTHORS[] = {
+                "${AUTHOR}<${USERADDR}>",
+                null
+            };
+
+            Gtk.show_about_dialog (active_window,
+                "program_name", "${APP_NAME}",
+                "logo-icon-name", Config.APP_ID,
+                "copyright", COPYRIGHT,
+                "version", Config.VERSION,
+                "authors", AUTHORS,
+                /// TRANSLATORS: Write your Name<email> here
+                "translator-credits", _("translator-credits"),
+                null
+            );
         }
 
         static int main (string[] args) {
