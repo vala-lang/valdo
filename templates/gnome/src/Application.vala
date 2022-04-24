@@ -33,7 +33,7 @@ namespace ${APP_NAMESPACE} {
         }
 
         protected override void activate () {
-            var win = get_active_window ();
+            var win = active_window;
             if (win == null) {
                 win = new ${APP_NAMESPACE}.MainWindow (this);
             }
