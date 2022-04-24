@@ -9,7 +9,7 @@ build-options:
   prepend-path: /usr/lib/sdk/vala/bin/
   prepend-ld-library-path: /usr/lib/sdk/vala/lib
 
-command: ${APP_NAME}
+command: ${APP_TITLE}
 finish-args:
 - --share=ipc
 - --socket=fallback-x11
