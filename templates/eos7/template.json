@@ -1,0 +1,53 @@
+{
+    "description": "a starter elementary OS 7 app",
+    "variables": {
+        "APP_NAME": {
+            "auto": true,
+            "default": "/${PROJECT_NAME}/\\s+//"
+        },
+        "APP_TITLE": {
+            "summary": "application binary name",
+            "pattern": "[A-za-z ]+"
+        },
+        "APP_ID": {
+            "summary": "application ID",
+            "pattern": "[a-z]{2,}(\\.\\w+){3}",
+            "default":"io.github.${USERNAME}.${PROJECT_NAME}"
+        },
+        "APP_NAMESPACE": {
+            "summary": "application namespace",
+            "pattern": "[A-Z]\\w{2,}",
+            "default": "/${PROJECT_NAME}/\\S+//"
+        },
+        "APP_PATH": {
+            "auto": true,
+            "default": "/${APP_ID}/(\\.|^|$)/\\//"
+        },
+        "APP_SUMMARY": {
+            "summary": "application summary",
+            "default": "A new app for elementary OS"
+        },
+        "APP_CATEGORIES": {
+            "summary": "categories (semicolon-separated)",
+            "pattern": "^((AudioVideo|Audio|Video|Development|Education|Game|Graphics|Network|Office|Science|Settings|System|Utility);)+$"
+        },
+        "APP_KEYWORDS": {
+            "summary": "keywords (semicolon-separated)",
+            "default": "/${PROJECT_NAME}/\\W+/;/^;+//\\w+/\\L\\0\\E/[^;]$/\\0;/",
+            "pattern": "^(\\w+;)+$"
+        }
+    },
+    "templates": [
+        "${APP_ID}.yml",
+        "meson.build",
+        "data/${PROGRAM_NAME}.metainfo.xml.in",
+        "data/${PROGRAM_NAME}.desktop.in",
+        "src/Application.vala",
+        "src/MainWindow.vala",
+        "src/Config.vala.in",
+        "po/POTFILES",
+        "README.md",
+        "meson.build"
+        
+    ]
+}
