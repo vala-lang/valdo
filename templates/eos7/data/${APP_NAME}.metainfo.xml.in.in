@@ -23,5 +23,10 @@
   </provides>
 
   <releases>
+    <!--
+    You need to add at least one release so that the GitHub CI Action can build your flatpak
+    For more infomation, see the AppStream documentation: 
+    https://freedesktop.org/software/appstream/docs/sect-Metadata-Releases.html
+    -->
   </releases>
 </component>
