@@ -29,7 +29,6 @@
         }
     },
     "templates": [
-        ".github/workflows/main.yml",
         "build-aux/flatpak/${APP_ID}.yaml",
         "build-aux/meson/build-and-run.sh",
         "build-aux/meson/postinstall.py",

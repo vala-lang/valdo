@@ -38,16 +38,17 @@
         },
         "APP_HOMEPAGE_URL": {
             "summary": "homepage URL of app",
-            "default": "https://www.github.com/${USERNAME}/{PROJECT_NAME}",
+            "default": "https://www.github.com/${USERNAME}/${PROJECT_NAME}",
             "pattern": "(((http|https):\/\/)|(\/)|(..\/))(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\/|\/([\\w#!:.?+=&%@!\\-\/]))?"
         },
         "APP_BUG_TRACKER_URL": {
             "summary":"bug tracker URL of app",
-            "default": "https://www.github.com/${USERNAME}/{PROJECT_NAME}/issues",
+            "default": "https://www.github.com/${USERNAME}/${PROJECT_NAME}/issues",
             "pattern": "(((http|https):\/\/)|(\/)|(..\/))(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\/|\/([\\w#!:.?+=&%@!\\-\/]))?"
         }
     },
     "templates": [
+        ".github/workflows/main.yml",
         "${APP_ID}.yml",
         "meson.build",
         "data/${APP_NAME}.desktop.in.in",
