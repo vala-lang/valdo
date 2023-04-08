@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>@APP_ID@</id>
+  
+  <name>@APP_TITLE@</name>
+  <summary>@APP_SUMMARY@</summary>
+  
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>@APP_LICENSE_TYPE@</project_license>
+  
+  <description>
+    <p>
+      @APP_SUMMARY@
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
+</component>
