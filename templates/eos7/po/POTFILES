@@ -1,0 +1,4 @@
+src/Application.vala
+src/MainWindow.vala
+data/${APP_NAME}.desktop.in
+data/${APP_NAME}.metainfo.xml.in

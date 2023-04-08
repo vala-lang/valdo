@@ -7,7 +7,6 @@ namespace Constants {
     public const string APP_VERSION = @APP_VERSION@;
     public const string APP_LICENSE_TYPE = @APP_LICENSE_TYPE@;
 
-    
     public const string GETTEXT_PACKAGE = @GETTEXT_PACKAGE@;
     public const string LOCALEDIR = @LOCALEDIR@;
 }
