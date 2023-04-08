@@ -1,4 +1,5 @@
 install_subdir('eos', install_dir: templates_dir)
+install_subdir('eos7', install_dir: templates_dir)
 install_subdir('gnome', install_dir: templates_dir)
 install_subdir('gtk', install_dir: templates_dir)
 install_subdir('gtk3', install_dir: templates_dir)

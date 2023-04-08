@@ -26,19 +26,19 @@ add_global_arguments(
 )
 
 config_data = configuration_data()
-config_data.set_quoted(
+config_data.set(
     'LOCALEDIR',
     join_paths(get_option('prefix'), get_option('localedir')),
 )
 
-config_data.set_quoted('APP_ID', app_id)
-config_data.set_quoted('APP_PATH', '/' + app_id.replace('.', '/') + '/')
-config_data.set_quoted('APP_NAME', app_name)
-config_data.set_quoted('APP_TITLE', app_title)
-config_data.set_quoted('APP_SUMMARY', app_summary)
-config_data.set_quoted('APP_LICENSE_TYPE', app_license_type)
-config_data.set_quoted('APP_VERSION', meson.project_version())
-config_data.set_quoted('GETTEXT_PACKAGE', app_id)
+config_data.set('APP_ID', app_id)
+config_data.set('APP_PATH', '/' + app_id.replace('.', '/') + '/')
+config_data.set('APP_NAME', app_name)
+config_data.set('APP_TITLE', app_title)
+config_data.set('APP_SUMMARY', app_summary)
+config_data.set('APP_LICENSE_TYPE', app_license_type)
+config_data.set('APP_VERSION', meson.project_version())
+config_data.set('GETTEXT_PACKAGE', app_id)
 config_file = configure_file(
     input: 'src/Config.vala.in',
     output: '@BASENAME@',
@@ -67,17 +67,8 @@ libadwaita = dependency(
 # Read meson.build files in specified sub directories
 subdir('src')
 subdir('tests')
-
-# Tell meson where to find our resources file and to compile it as a GResource
-gresource = gnome.compile_resources(
-    'gresource',
-    input_file: configure_file(
-        input: 'data' / app_name + '.gresource.xml.in',
-        output: 'data' / app_name + '.gresource.xml',
-        configuration: conf_data,
-    ),
-    source_dir: join_paths(meson.source_root(), 'data'),
-)
+subdir('data')
+subdir('po')
 
 # Create a new executable, list the files we want to compile, list the dependencies we need, and install
 executable(
@@ -95,75 +86,5 @@ test_exe = executable(
     dependencies: unit_test_dependencies,
 )
 test(app_name + '-unit-tests', test_exe)
-
-#Translate and install our .desktop file
-
-desktop_file = i18n.merge_file(
-    input: configure_file(
-        input: 'data' / app_name + '.desktop.in.in',
-        output: 'data' / app_name + '.desktop.in',
-        configuration: conf_data,
-    ),
-    output: app_id + '.desktop',
-    po_dir: meson.source_root() / 'po',
-    type: 'desktop',
-    install: true,
-    install_dir: get_option('datadir') / 'applications',
-)
-
-desktop_utils = find_program('desktop-file-validate', required: false)
-if desktop_utils.found()
-    test('Validate desktop file', desktop_utils, args: [desktop_file])
-endif
-
-# Translate and install our .metainfo file
-appstream_file = i18n.merge_file(
-    input: configure_file(
-        input: 'data' / app_name + '.metainfo.xml.in.in',
-        output: 'data' / app_name + '.metainfo.xml.in',
-        configuration: conf_data,
-    ),
-    output: app_id + '.metainfo.xml',
-    po_dir: meson.source_root() / 'po',
-    install: true,
-    install_dir: get_option('datadir') / 'metainfo',
-)
-
-subdir('po')
-
-# Install our icons in all the required sizes
-icon_sizes = ['16', '24', '32', '48', '64', '128']
-
-foreach i : icon_sizes
-    install_data(
-        'data' / i + '.svg',
-        install_dir: get_option('datadir') / 'icons' / 'hicolor' / i + 'x' + i /
-        'apps',
-        rename: app_id + '.svg',
-    )
-    install_data(
-        'data' / i + '.svg',
-        install_dir: get_option('datadir') / 'icons' / 'hicolor' / i + 'x' + i +
-        '@2' / 'apps',
-        rename: app_id + '.svg',
-    )
-endforeach
-
-# Install gschema (settings) file
-gschema_file = configure_file(
-    input: 'data' / app_name + '.gschema.xml.in',
-    output: app_id + '.gschema.xml',
-    configuration: conf_data,
-    install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
-)
-
-compile_schemas = find_program('glib-compile-schemas', required: false)
-if compile_schemas.found()
-    test(
-        'Validate schema file',
-        compile_schemas,
-        args: ['--strict', '--dry-run', meson.current_build_dir()],
-    )
-endif
 
 meson.add_install_script('meson/post_install.py')

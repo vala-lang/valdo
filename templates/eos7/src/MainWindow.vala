@@ -24,12 +24,9 @@ public class ${APP_NAMESPACE}.MainWindow : Adw.ApplicationWindow {
 
         var header = new Adw.HeaderBar ();
         var layout_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
-        var text_view = new Gtk.TextView () {
-            text = _("Hello World");
-        };
-
+        var label = new Gtk.Label (_("Hello World"));
         layout_box.append (header);
-        layout_box.append (text_view);
+        layout_box.append (label);
 
         this.set_content (layout_box);
     }
