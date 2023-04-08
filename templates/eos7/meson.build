@@ -40,6 +40,13 @@ config_file = configure_file(
     configuration: config_data,
 )
 
+# Define common dependencies used in all targets
+global_dependencies = [
+    dependency('gee-0.8'),
+    dependency('glib-2.0'),
+    dependency('gobject-2.0'),
+]
+
 libadwaita = dependency(
     'libadwaita-1',
     version: '>= 1.0.0',
