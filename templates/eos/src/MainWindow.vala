@@ -16,11 +16,6 @@ public class ${APP_NAMESPACE}.MainWindow : Adw.ApplicationWindow {
     }
 
     construct {
-        Intl.setlocale (GLib.LocaleCategory.ALL, "");
-        Intl.bindtextdomain (Constants.GETTEXT_PACKAGE, Constants.LOCALEDIR);
-        Intl.bind_textdomain_codeset (Constants.GETTEXT_PACKAGE, "UTF-8");
-        Intl.textdomain (Constants.GETTEXT_PACKAGE);
-
         var header = new Adw.HeaderBar ();
         var layout_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
 

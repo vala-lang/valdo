@@ -3,6 +3,13 @@ public class ${APP_NAMESPACE}.Application : Adw.Application {
         Object (application_id: Constants.APP_ID);
     }
 
+    construct {
+        Intl.setlocale (GLib.LocaleCategory.ALL, "");
+        Intl.bindtextdomain (Constants.GETTEXT_PACKAGE, Constants.LOCALEDIR);
+        Intl.bind_textdomain_codeset (Constants.GETTEXT_PACKAGE, "UTF-8");
+        Intl.textdomain (Constants.GETTEXT_PACKAGE);
+    }
+
     protected override void activate () {
         var main_window = this.get_active_window ();
 
