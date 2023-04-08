@@ -15,9 +15,9 @@
             "default":"io.github.${USERNAME}.${PROJECT_NAME}"
         },
         "APP_NAMESPACE": {
-            "summary": "application namespace",
-            "pattern": "[A-Z]\\w{2,}",
-            "default": "/${PROJECT_NAME}/\\s+//"
+            "summary": "the namespace to use for the application",
+            "default": "/${PROJECT_NAME}/\\w+/\\u\\0/(\\w)?\\W+(\\w)?(\\w*)/\\1\\u\\2\\L\\3\\E/^\\w/\\u\\0/",
+            "pattern": "^[A-Za-z_]\\w*$"
         },
         "APP_PATH": {
             "auto": true,
