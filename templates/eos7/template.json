@@ -6,7 +6,7 @@
             "default": "/${PROJECT_NAME}/\\s+//"
         },
         "APP_TITLE": {
-            "summary": "application binary name",
+            "summary": "app title (used as name in appstream)",
             "pattern": "[A-za-z ]+"
         },
         "APP_ID": {
@@ -40,14 +40,14 @@
     "templates": [
         "${APP_ID}.yml",
         "meson.build",
-        "data/${PROGRAM_NAME}.metainfo.xml.in",
-        "data/${PROGRAM_NAME}.desktop.in",
+        "data/${APP_NAME}.metainfo.xml.in",
+        "data/${APP_NAME}.desktop.in",
         "src/Application.vala",
         "src/MainWindow.vala",
         "src/Config.vala.in",
+        "tests/test.vala",
         "po/POTFILES",
         "README.md",
         "meson.build"
-        
     ]
 }
