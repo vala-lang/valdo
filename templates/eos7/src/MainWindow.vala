@@ -21,10 +21,15 @@ public class ${APP_NAMESPACE}.MainWindow : Adw.ApplicationWindow {
         Intl.bind_textdomain_codeset (Constants.GETTEXT_PACKAGE, "UTF-8");
         Intl.textdomain (Constants.GETTEXT_PACKAGE);
 
-
         var header = new Adw.HeaderBar ();
         var layout_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+
         var label = new Gtk.Label (_("Hello World"));
+        label.vexpand = true;
+        label.valign = Gtk.Align.CENTER;
+        label.hexpand = true;
+        label.halign = Gtk.Align.CENTER;
+
         layout_box.append (header);
         layout_box.append (label);
 
