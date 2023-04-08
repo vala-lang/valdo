@@ -35,6 +35,16 @@
             "summary": "keywords (semicolon-separated)",
             "default": "/${PROJECT_NAME}/\\W+/;/^;+//\\w+/\\L\\0\\E/[^;]$/\\0;/",
             "pattern": "^(\\w+;)+$"
+        },
+        "APP_HOMEPAGE_URL": {
+            "summary": "homepage URL of app",
+            "default": "https://link.to/your/project",
+            "pattern": "^(?<protocol>[a-z\\-]+)?:?(?<slash>\/\/)?(?<host>[a-zA-Z0-9\\.]+)?(?P<port>:\\d+)?$"
+        },
+        "APP_BUG_TRACKER_URL": {
+            "summary":"bug tracker URL of app",
+            "default": "https://link.to/your/project",
+            "pattern": "^(?<protocol>[a-z\\-]+)?:?(?<slash>\/\/)?(?<host>[a-zA-Z0-9\\.]+)?(?P<port>:\\d+)?$"
         }
     },
     "templates": [
