@@ -10,6 +10,7 @@ Either:
 
 -   Use Visual Studio Code with [Flatpak extension](https://marketplace.visualstudio.com/items?itemName=bilelmoussaoui.flatpak-vscode
 -   Use [GNOME Builder](https://apps.gnome.org/en-GB/app/org.gnome.Builder/)
+-   Flatpak integrations for of your preferred IDE/Code Editor
 -   Or use the [flatpak and flatpak-builder](https://docs.flatpak.org/en/latest/first-build.htm) commands.
 
 ### Meson
