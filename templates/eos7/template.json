@@ -17,7 +17,7 @@
         "APP_NAMESPACE": {
             "summary": "application namespace",
             "pattern": "[A-Z]\\w{2,}",
-            "default": "/${PROJECT_NAME}/\\S+//"
+            "default": "/${PROJECT_NAME}/\\s+//"
         },
         "APP_PATH": {
             "auto": true,
