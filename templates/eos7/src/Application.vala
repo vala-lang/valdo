@@ -8,7 +8,7 @@ public class ${APP_NAMESPACE}.Application : Gtk.Application {
 
         if (main_window == null) {
             main_window = new MainWindow (this) {
-                title = _(Constants.APP_TITLE)
+                title = _("${APP_TITLE}")
             };
 
             // Enable elementary OS Libadwaita styling special case

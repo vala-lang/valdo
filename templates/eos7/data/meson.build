@@ -41,6 +41,32 @@ appstream_file = i18n.merge_file(
     install_dir: get_option('datadir') / 'metainfo',
 )
 
+appstream_util = find_program('appstream-util', required: false)
+if appstream_util.found()
+    test(
+        'Validate appstream file',
+        appstream_util,
+        args: ['validate', appstream_file],
+    )
+endif
+
+# Install gschema (settings) file
+gschema_file = configure_file(
+    input: app_name + '.gschema.xml.in',
+    output: app_id + '.gschema.xml',
+    configuration: config_data,
+    install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
+)
+
+compile_schemas = find_program('glib-compile-schemas', required: false)
+if compile_schemas.found()
+    test(
+        'Validate schema file',
+        compile_schemas,
+        args: ['--strict', '--dry-run', meson.current_build_dir()],
+    )
+endif
+
 # Install our icons in all the required sizes
 icon_sizes = ['16', '24', '32', '48', '64', '128']
 
@@ -59,19 +85,4 @@ foreach i : icon_sizes
     )
 endforeach
 
-# Install gschema (settings) file
-gschema_file = configure_file(
-    input: app_name + '.gschema.xml.in',
-    output: app_id + '.gschema.xml',
-    configuration: config_data,
-    install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
-)
 
-compile_schemas = find_program('glib-compile-schemas', required: false)
-if compile_schemas.found()
-    test(
-        'Validate schema file',
-        compile_schemas,
-        args: ['--strict', '--dry-run', meson.current_build_dir()],
-    )
-endif
