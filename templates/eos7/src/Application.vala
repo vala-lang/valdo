@@ -1,4 +1,4 @@
-public class ${APP_NAMESPACE}.Application : Gtk.Application {
+public class ${APP_NAMESPACE}.Application : Adw.Application {
     public Application () {
         Object (application_id: Constants.APP_ID);
     }
@@ -10,15 +10,6 @@ public class ${APP_NAMESPACE}.Application : Gtk.Application {
             main_window = new MainWindow (this) {
                 title = _("${APP_TITLE}")
             };
-
-            // Enable elementary OS Libadwaita styling special case
-            Granite.Settings.get_default ();
-
-            // Initialise Libadwaita
-            Adw.init ();
-
-            // Light/Dark Theme handling
-            Adw.StyleManager.get_default ().color_scheme = Adw.ColorScheme.PREFER_LIGHT;
         }
 
         main_window.present ();
@@ -34,10 +25,12 @@ public class ${APP_NAMESPACE}.Application : Gtk.Application {
 
         settings.bind ("window-maximized", main_window, "maximized", SettingsBindFlags.SET);
     }
-
 }
 
-int main (string[] args) {
+public static int main (string[] args) {
+    // Enable elementary OS Libadwaita styling special case
+    Granite.Settings.get_default ();
+
     var my_app = new ${APP_NAMESPACE}.Application ();
     return my_app.run (args);
 }

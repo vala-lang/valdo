@@ -7,7 +7,7 @@ public class ${APP_NAMESPACE}.MainWindow : Adw.ApplicationWindow {
 
     static construct {
         var css_provider = new Gtk.CssProvider ();
-        css_provider.load_from_resource (Constants.APP_PATH + "app.css");
+        css_provider.load_from_resource (Constants.APP_PATH + "style.css");
 
         Gtk.StyleContext.add_provider_for_display (Gdk.Display.get_default (),
             css_provider,
