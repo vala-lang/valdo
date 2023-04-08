@@ -1,22 +1,53 @@
-# ${PROJECT_NAME}
+# ${APP_TITLE}
 
-${PROJECT_SUMMARY}
+${APP_SUMMARY}
 
-## Building, Testing, and Installation
+## Build Instructions
 
-You'll need the following dependencies to build:
-* libgtk-3-dev
-* meson
-* valac
+### Flatpak (Recommended)
 
-Run `meson build` to configure the build environment and run `ninja` to build
-```Bash
-    meson build --prefix=/usr
-    cd build
-    ninja
+Either:
+
+-   Use Visual Studio Code with [Flatpak extension](https://marketplace.visualstudio.com/items?itemName=bilelmoussaoui.flatpak-vscode
+-   Use [GNOME Builder](https://apps.gnome.org/en-GB/app/org.gnome.Builder/)
+-   Flatpak integrations for of your preferred IDE/Code Editor
+-   Or use the [flatpak and flatpak-builder](https://docs.flatpak.org/en/latest/first-build.htm) commands.
+
+### Meson
+
+#### Dependencies
+
+-   glib-2.0
+-   gobject-2.0
+-   gee-0.8
+-   gtk4
+-   libadwaita-1
+-   granite-7
+
+#### Build Commands
+
+To build:
+
+```sh
+meson build --prefix=/usr
+cd build
+ninja
 ```
-To install, use `ninja install`, then execute with `com.${USERNAME}.${PROGRAM_NAME}`
-```Bash
-    sudo ninja install
-    com.github.${USERNAME}.${PROGRAM_NAME}
+
+To test:
+
+(Assuming you're in the project root and have already built the app)
+
+```sh
+cd build
+meson test
+```
+
+To install:
+
+(Assuming you're in project root)
+
+```sh
+cd build
+sudo ninja install
 ```

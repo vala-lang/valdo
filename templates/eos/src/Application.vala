@@ -1,35 +1,36 @@
-public class MyApp : Gtk.Application {
-    public MyApp () {
-        Object (
-            application_id: "com.github.${USERNAME}.${PROGRAM_NAME}",
-            flags: ApplicationFlags.FLAGS_NONE
-        );
+public class ${APP_NAMESPACE}.Application : Adw.Application {
+    public Application () {
+        Object (application_id: Constants.APP_ID);
     }
 
     protected override void activate () {
-        var main_window = new Gtk.ApplicationWindow (this) {
-            default_height = 300,
-            default_width = 300,
-            title = "Hello World"
-        };
+        var main_window = this.get_active_window ();
 
-        var gtk_settings = Gtk.Settings.get_default ();
-        var granite_settings = Granite.Settings.get_default ();
+        if (main_window == null) {
+            main_window = new MainWindow (this) {
+                title = _("${APP_TITLE}")
+            };
+        }
 
-        gtk_settings.gtk_application_prefer_dark_theme = (
-            granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK
-        );
+        main_window.present ();
 
-        granite_settings.notify["prefers-color-scheme"].connect (() => {
-            gtk_settings.gtk_application_prefer_dark_theme = (
-                granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK
-            );
-        });
+        // Remember window state
+        var settings = new Settings (Constants.APP_ID);
+        settings.bind ("window-height", main_window, "default-height", SettingsBindFlags.DEFAULT);
+        settings.bind ("window-width", main_window, "default-width", SettingsBindFlags.DEFAULT);
 
-        main_window.show_all ();
+        if (settings.get_boolean ("window-maximized")) {
+            main_window.maximize ();
+        }
+
+        settings.bind ("window-maximized", main_window, "maximized", SettingsBindFlags.SET);
     }
+}
 
-    public static int main (string[] args) {
-        return new MyApp ().run (args);
-    }
+public static int main (string[] args) {
+    // Enable elementary OS Libadwaita styling special case
+    Granite.Settings.get_default ();
+
+    var my_app = new ${APP_NAMESPACE}.Application ();
+    return my_app.run (args);
 }
