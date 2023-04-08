@@ -41,7 +41,7 @@ config_data.set('APP_SUMMARY', app_summary)
 config_data.set('APP_LICENSE_TYPE', app_license_type)
 config_data.set('APP_DEVELOPER_NAME', app_developer_name)
 config_data.set('APP_HOMEPAGE_URL', app_homepage_url)
-config_data.set('app_bug_tracker_url',app_bug_tracker_url)
+config_data.set('APP_BUG_TRACKER_URL', app_bug_tracker_url)
 config_data.set('APP_VERSION', meson.project_version())
 config_data.set('GETTEXT_PACKAGE', app_id)
 config_file = configure_file(

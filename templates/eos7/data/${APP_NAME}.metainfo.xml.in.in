@@ -14,7 +14,7 @@
   <url type="homepage">@APP_HOMEPAGE_URL@</url>
   <url type="bugtracker">@APP_BUG_TRACKER_URL@</url>
 
-  <developer_name>@APP_DEVELEOPER_NAME@</developer_name>
+  <developer_name>@APP_DEVELOPER_NAME@</developer_name>
 
   <content_rating type="oars-1.1"></content_rating>
 
