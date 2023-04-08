@@ -1,9 +1,9 @@
 # Tell meson where to find our resources file and to compile it as a GResource
 gresource = gnome.compile_resources(
     'gresource',
-    input_file: configure_file(
-        input: 'app_name + '.gresource.xml.in',
-        output: 'app_name + '.gresource.xml',
+    configure_file(
+        input: app_name + '.gresource.xml.in',
+        output: app_name + '.gresource.xml',
         configuration: config_data,
     ),
     source_dir: join_paths(meson.source_root(), 'data'),
@@ -61,7 +61,7 @@ endforeach
 
 # Install gschema (settings) file
 gschema_file = configure_file(
-    input: 'app_name + '.gschema.xml.in',
+    input: app_name + '.gschema.xml.in',
     output: app_id + '.gschema.xml',
     configuration: config_data,
     install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',

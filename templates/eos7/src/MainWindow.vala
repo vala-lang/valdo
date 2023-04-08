@@ -1,7 +1,7 @@
 public class ${APP_NAMESPACE}.MainWindow : Adw.ApplicationWindow {
     public MainWindow (Gtk.Application app) {
         Object (
-            application: app,
+            application: app
         );
     }
 

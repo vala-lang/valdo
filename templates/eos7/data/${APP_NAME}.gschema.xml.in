@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema path="@APP_PATH" id="@APP_ID@">
+  <schema path="@APP_PATH@" id="@APP_ID@">
     <key name="window-height" type="i">
       <default>475</default>
       <summary>Most recent window height</summary>
