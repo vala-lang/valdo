@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=@APP_TITLE@
+Name=${PROJECT_NAME}
 Icon=@APP_ID@
-Exec=@APP_NAME@
+Exec=@APP_EXE@
 Terminal=false
 Type=Application
 Categories=Utility;GNOME;GTK;

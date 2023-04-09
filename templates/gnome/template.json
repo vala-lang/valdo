@@ -5,14 +5,14 @@
             "auto": true,
             "default": "/${PROJECT_NAME}/\\s+//"
         },
-        "APP_TITLE": {
+        "APP_EXE": {
             "summary": "application binary name",
             "pattern": "[A-Za-z ]+"
         },
         "APP_ID": {
             "summary": "application ID",
             "pattern": "[a-z]{2,}(\\.\\w+){3}",
-            "default": "io.github.${USERNAME}.${PROJECT_NAME}"
+            "default": "io.github.${USERNAME}.${APP_NAME}"
         },
         "APP_NAMESPACE": {
             "summary": "application namespace",

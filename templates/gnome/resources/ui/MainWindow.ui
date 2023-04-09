@@ -4,7 +4,7 @@
   <requires lib="libadwaita" version="1.0"/>
 
   <template class="${APP_NAMESPACE}MainWindow" parent="AdwApplicationWindow">
-    <property name="title" translatable="yes">${APP_NAME}</property>
+    <property name="title" translatable="yes">${PROJECT_NAME}</property>
     <property name="default-width">580</property>
     <property name="default-height">450</property>
     <property name="icon-name">${APP_ID}</property>
@@ -38,7 +38,7 @@
   <menu id="action_menu">
     <section>
       <item>
-        <attribute name="label">_About ${APP_NAME}</attribute>
+        <attribute name="label">_About ${PROJECT_NAME}</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>

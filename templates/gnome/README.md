@@ -1,3 +1,3 @@
-# ${APP_TITLE}
+# ${PROJECT_NAME}
 
 ${APP_SUMMARY}

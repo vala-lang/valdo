@@ -3,7 +3,7 @@ ${APP_NAME}_sources += [
   'MainWindow.vala'
 ]
 
-executable(app_title, ${APP_NAME}_sources,
+executable(app_exe, ${APP_NAME}_sources,
   vala_args: [
     '--target-glib=2.50',
     '--vapidir', vapi_dir,
