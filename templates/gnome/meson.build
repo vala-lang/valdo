@@ -7,7 +7,7 @@ project('${APP_NAME}', ['c', 'vala'],
 
 pkgdata_dir = get_option('prefix') / get_option('datadir') / meson.project_name()
 
-app_title = '${APP_TITLE}'
+app_exe = '${APP_EXE}'
 app_summary = '${APP_SUMMARY}'
 
 app_id = '${APP_ID}'
@@ -18,7 +18,7 @@ conf_data.set('APP_ID', app_id)
 conf_data.set('APP_PATH', '/' + app_id.replace('.', '/') + '/')
 conf_data.set('APP_NAME', app_name)
 
-conf_data.set('APP_TITLE', app_title)
+conf_data.set('APP_EXE', app_exe)
 conf_data.set('APP_SUMMARY', app_summary)
 
 ${APP_NAME}_sources = []

@@ -49,7 +49,7 @@ namespace ${APP_NAMESPACE} {
             };
 
             Gtk.show_about_dialog (active_window,
-                "program_name", "${APP_NAME}",
+                "program_name", "${PROJECT_NAME}",
                 "logo-icon-name", Config.APP_ID,
                 "copyright", COPYRIGHT,
                 "version", Config.VERSION,
