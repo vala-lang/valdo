@@ -1,7 +1,6 @@
 app_dependencies = [
     global_dependencies,
     dependency('gtk4'),
-    libadwaita,
     dependency('granite-7'),
 ]
 

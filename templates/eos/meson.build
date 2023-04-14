@@ -57,18 +57,6 @@ global_dependencies = [
     dependency('gobject-2.0'),
 ]
 
-libadwaita = dependency(
-    'libadwaita-1',
-    version: '>= 1.0.0',
-    fallback: ['libadwaita', 'libadwaita_dep'],
-    default_options: [
-        'examples=false',
-        'introspection=disabled',
-        'tests=false',
-        'vapi=false',
-    ],
-)
-
 # Read meson.build files in specified sub directories
 subdir('src')
 subdir('tests')

@@ -1,4 +1,4 @@
-public class ${APP_NAMESPACE}.Application : Adw.Application {
+public class ${APP_NAMESPACE}.Application : Gtk.Application {
     public Application () {
         Object (application_id: Constants.APP_ID);
     }
@@ -21,7 +21,26 @@ public class ${APP_NAMESPACE}.Application : Adw.Application {
 
         main_window.present ();
 
-        // Remember window state
+        // Setup color scheme change events and theming
+        var granite_settings = Granite.Settings.get_default ();
+        var gtk_settings = Gtk.Settings.get_default ();
+        gtk_settings.gtk_icon_theme_name = "elementary";
+
+        if (!(gtk_settings.gtk_theme_name.has_prefix ("io.elementary.stylesheet"))) {
+            gtk_settings.gtk_theme_name = "io.elementary.stylesheet.blueberry";
+        }
+
+        gtk_settings.gtk_application_prefer_dark_theme = (
+            granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK
+        );
+
+        granite_settings.notify["prefers-color-scheme"].connect (() => {
+            gtk_settings.gtk_application_prefer_dark_theme = (
+                granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK
+            );
+        });
+
+        // Remember window dimensions state
         var settings = new Settings (Constants.APP_ID);
         settings.bind ("window-height", main_window, "default-height", SettingsBindFlags.DEFAULT);
         settings.bind ("window-width", main_window, "default-width", SettingsBindFlags.DEFAULT);
@@ -35,9 +54,6 @@ public class ${APP_NAMESPACE}.Application : Adw.Application {
 }
 
 public static int main (string[] args) {
-    // Enable elementary OS Libadwaita styling special case
-    Granite.Settings.get_default ();
-
     var my_app = new ${APP_NAMESPACE}.Application ();
     return my_app.run (args);
 }

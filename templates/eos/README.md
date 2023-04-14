@@ -21,7 +21,6 @@ Either:
 -   gobject-2.0
 -   gee-0.8
 -   gtk4
--   libadwaita-1
 -   granite-7
 
 #### Build Commands
