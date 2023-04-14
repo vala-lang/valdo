@@ -1,0 +1,66 @@
+name: CI
+
+# This workflow will run for any pull request or pushed commit
+# on: [push, pull_request]
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "flatpak"
+  flatpak:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # This job runs in a special container designed for building Flatpaks for AppCenter
+    container:
+      image: ghcr.io/elementary/flatpak-platform/runtime:7.2
+      options: --privileged
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so the job can access it
+      - uses: actions/checkout@v3
+
+      - name: "Install Vala Freedesktop Extension SDK"
+        run: "flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && flatpak install -y runtime/org.freedesktop.Sdk.Extension.vala/x86_64/22.08"
+
+        # Builds your flatpak manifest using the Flatpak Builder action
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          # This is the name of the Bundle file we're building and can be anything you like
+          bundle: ${APP_NAME}.flatpak
+          # This uses your app's RDNN ID
+          manifest-path: ${APP_ID}.yml
+
+          # You can automatically run any of the tests you've created as part of this workflow
+          run-tests: true
+
+          # These lines specify the location of the elementary Runtime and Sdk
+          repository-name: appcenter
+          repository-url: https://flatpak.elementary.io/repo.flatpakrepo
+          cache-key: "flatpak-builder-${{ github.sha }}"
+
+  lint:
+    runs-on: ubuntu-latest
+
+    container:
+      image: valalang/lint
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Lint
+        run: io.elementary.vala-lint .
