@@ -1,0 +1,28 @@
+using Gtk 4.0;
+using Adw 1;
+
+template ${APP_NAMESPACE}MainWindow : Adw.ApplicationWindow {
+    title: "${PROJECT_NAME}";
+    default-width: 400;
+    default-height: 350;
+
+    Gtk.Box {
+        orientation: vertical;
+
+        Adw.HeaderBar {}
+
+        Gtk.Box {
+            orientation: vertical;
+            halign: center;
+            valign: center;
+            hexpand: true;
+            vexpand: true;
+
+            Gtk.Label {
+                styles ["title-1"]
+                label: "Hello, world!";
+            }
+        }
+    }
+}
+
