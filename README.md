@@ -132,3 +132,34 @@ The substitutions will be applied in the order they appear, one after another.
 [^1]: You can specify `"auto": true` for the variable to make it completely
   automatic, so there's no prompting the user. This is useful when generating
   variable names in build scripts, for example.
+
+## Loading Custom Templates
+
+By default, the program will attempt to load custom templates from the following paths on your computer:
+
+- `$XDG_DATA_HOME/valdo/templates`
+- `$HOME/.local/share/valdo/templates` (used as fallback)
+
+If there are custom templates available, they will appear when calling `valdo` without any additional arguments.
+
+For the templates to be detected, they need to be in their own directories within these paths. e.g `$XDG_DATA_HOME/valdo/templates/my_custom_template`
+
+### Custom Template Path Option
+
+To look for custom templates from a specific location, add the following use the `-c` or `--custom-dir` option, followed by the directory path
+that the custom templates are located in.
+
+For example:
+
+```sh
+valdo -c /home/you/my-templates"
+```
+
+Would attempt to load custom templates from the `/home/you/my-templates` directory.
+
+You are still able to select a template with this option used:
+
+```sh
+valdo -c /home/you/my-templates" template_name
+```
+
