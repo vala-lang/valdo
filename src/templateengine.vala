@@ -38,6 +38,12 @@ namespace Valdo.TemplateEngine {
             while ((finfo = enumerator.next_file ()) != null) {
                 var fileinfo = (!) finfo;
                 if (fileinfo.get_file_type () == DIRECTORY) {
+                    // Skip .git/ directory so that projects can start with a clean git repo
+                    // if template root already had a git repository initialized.
+                    if (fileinfo.get_name ().has_suffix (".git")) {
+                        continue;
+                    }
+
                     list_files (
                         enumerator.get_child (fileinfo),
                         found

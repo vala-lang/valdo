@@ -27,10 +27,12 @@ namespace Valdo.Main {
      * Command-line options
      */
     private const OptionEntry[] ENTRIES = {
-        { "version",        'v', OptionFlags.NONE, OptionArg.NONE, ref option_version,        "Display version number",   null },
+        { "version",        'v', OptionFlags.NONE, OptionArg.NONE,         ref option_version,                              "Display version number",         null },
+
+        { "custom-dir",     'c', OptionFlags.NONE, OptionArg.FILENAME,     ref option_argument_custom_directory_override,   "Set custom templates directory", "CUSTOM_DIRECTORY" },
 
         /* Non-named argument is treated as name of template to use */
-        { OPTION_REMAINING,   0, OptionFlags.NONE, OptionArg.STRING_ARRAY, ref non_option_arguments, (string) null, "TEMPLATE" },
+        { OPTION_REMAINING,   0, OptionFlags.NONE, OptionArg.STRING_ARRAY, ref non_option_arguments,                        (string) null,                    "TEMPLATE" },
 
         /* Array terminator */
         { }
@@ -42,6 +44,11 @@ namespace Valdo.Main {
     private bool option_version;
 
     /**
+     * Value of --custom-dir option argument
+     */
+    private string? option_argument_custom_directory_override;
+
+    /**
      * Non-option command-line arguments
      *
      * There should be only one such argument
@@ -50,20 +57,35 @@ namespace Valdo.Main {
     [CCode (array_length = false, array_null_terminated = true)]
     private string[] non_option_arguments;
 
-    /**
+     /**
      * Initialize project from template
      *
      * @param template_name the name of template to use
+     * @param custom_directory_override_path Path to custom templates directory provided by user
      *
      * @return {@link true} on success, {@link false} otherwise
      */
-    bool initialize_project (string template_name) {
+    bool initialize_project (string template_name, string? custom_directory_override_path) {
         var template_dir = File.new_build_filename (Config.TEMPLATES_DIR, template_name);
 
         if (!template_dir.query_exists ()) {
-            stderr.printf ("Error: '%s' is not an available template.\n\n", template_name);
-            stderr.printf ("Run '%s' to see a list of available templates.\n", APP_NAME);
-            return false;
+            try {
+                var custom_templates_dir = retrieve_custom_templates_dir (custom_directory_override_path);
+                string? custom_templates_dir_path = custom_templates_dir.get_path ();
+                if (custom_templates_dir_path == null) {
+                    throw new FileError.NOENT ("Could not find custom template directory paths");
+                }
+
+                template_dir = File.new_build_filename ((!) custom_templates_dir_path, template_name);
+            } catch (Error e) {
+                debug ("%s\n\n", e.message);
+            }
+
+            if (!template_dir.query_exists ()) {
+                stderr.printf ("Error: '%s' is not an available template.\n\n", template_name);
+                stderr.printf ("Run '%s' to see a list of available templates.\n", APP_NAME);
+                return false;
+            }
         }
 
         try {
@@ -154,14 +176,19 @@ namespace Valdo.Main {
         }
     }
 
-    /**
-     * List available templates
-     */
-    void list_templates () {
-        var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
-        var templates = new HashTable<string, string> (str_hash, str_equal);
-        int max_template_name_len = 0;
 
+    /**
+     * Enumerate templates from the specified templates directory
+     * 
+     * @param templates_dir Templates directory
+     * @param templates Key value store for storing the name of the template as a key and the description as a value
+     * @param max_template_name_len Maximum template name length. Will be used to format the output of the list of templates
+     * @param error_on_fail If set to true, an error log message will be output on failure, which will cause the program to stop
+     */
+    void enumerate_templates (File templates_dir,
+                              HashTable<string, string> templates,
+                              ref int max_template_name_len,
+                              bool error_on_fail = false) {
         try {
             var enumerator = templates_dir.enumerate_children (
                 FileAttribute.ID_FILE,
@@ -171,16 +198,77 @@ namespace Valdo.Main {
             FileInfo? fileinfo;
             while ((fileinfo = enumerator.next_file ()) != null) {
                 var template_name = ((!) fileinfo).get_name ();
+                string? templates_dir_path = templates_dir.get_path ();
+                if (templates_dir_path == null) {
+                    throw new FileError.NOENT ("Could not find template directory path while enumerating templates:");
+                }
+
                 var template = Valdo.Template.new_from_directory (File.new_build_filename (
-                    Config.TEMPLATES_DIR, template_name
+                    (!) templates_dir_path, template_name
                 ));
+
                 templates[template_name] = template.description;
                 if (max_template_name_len < template_name.length)
                     max_template_name_len = template_name.length;
             }
         } catch (Error e) {
-            error ("Can't enumerate templates: %s", e.message);
+            string error_message = "Can't enumerate templates: %s\n\n";
+            if (error_on_fail) {
+                error (error_message, e.message);
+            } else {
+                debug (error_message, e.message);
+            }
         }
+    }
+
+    /**
+     * Retrieve one of the default custom templates directories
+     * 
+     * @param custom_directory_override_path Path to custom templates directory provided by user 
+     * 
+     * @return {@link GLib.File} custom template directory
+     */
+    File retrieve_custom_templates_dir (string? custom_directory_override_path) {
+        File custom_templates_dir;
+
+        if (custom_directory_override_path == null) {
+            string? xdg_data_home_result = Environment.get_variable (Config.XDG_DATA_HOME);
+            string xdg_data_home_template_path = xdg_data_home_result == null
+                ? "error/not/found"
+                : Path.build_filename ((string) xdg_data_home_result, Config.CUSTOM_TEMPLATES_DIR_SUB_PATH);
+
+            debug ("XDG_DATA_HOME_TEMPLATE_PATH: %s\n\n", xdg_data_home_template_path);
+
+            custom_templates_dir = File.new_for_path (xdg_data_home_template_path);
+
+            if (!custom_templates_dir.query_exists ()) {
+                custom_templates_dir = File.new_for_path (
+                    Path.build_filename (Environment.get_home_dir (), "/", Config.FALLBACK_CUSTOM_TEMPLATES_DIR)
+                );
+            }
+        } else {
+            custom_templates_dir = File.new_for_path ((!) custom_directory_override_path);
+        }
+
+        return custom_templates_dir;
+    }
+
+    /**
+     * List available templates
+     * 
+     * @param custom_directory_override_path Path to custom templates directory provided by user 
+     */
+    void list_templates (string? custom_directory_override_path) {
+        var templates_dir = File.new_for_path (Config.TEMPLATES_DIR);
+        File custom_templates_dir = retrieve_custom_templates_dir (custom_directory_override_path);
+
+        var templates = new HashTable<string, string> (str_hash, str_equal);
+        var custom_templates = new HashTable<string, string> (str_hash, str_equal);
+
+        int max_template_name_len = 0;
+
+        enumerate_templates (templates_dir, templates, ref max_template_name_len, true);
+        enumerate_templates (custom_templates_dir, custom_templates, ref max_template_name_len);
 
         if (templates.length != 0) {
             stdout.printf ("Available templates:\n");
@@ -188,8 +276,24 @@ namespace Valdo.Main {
 
             foreach (unowned string name in templates.get_keys_as_array ())
                 print ("%s%s - %s\n", name, string.nfill (max_template_name_len - name.length, ' '), templates[name]);
+
+            stdout.printf ("\n");
         } else {
-            stdout.printf ("There are no templates available.\n");
+            stdout.printf ("There are no templates available.\n\n");
+        }
+
+        if (custom_templates.length != 0) {
+            stdout.printf ("Custom Templates:\n");
+            stdout.printf ("-----------------\n");
+
+            foreach (unowned string name in custom_templates.get_keys_as_array ()) {
+                print (
+                    "%s%s - %s\n", name, string.nfill (max_template_name_len - name.length, ' '),
+                    custom_templates[name]
+                );
+            }
+        } else {
+            stdout.printf (Config.MISSING_CUSTOM_TEMPLATES_MESSAGE);
         }
     }
 
@@ -218,6 +322,10 @@ namespace Valdo.Main {
             return 1;
         }
 
+        if (option_argument_custom_directory_override != null) {
+            debug ("Custom directory override path: %s\n\n", (!) option_argument_custom_directory_override);
+        }
+
         /* --version/-v */
         if (option_version) {
             stdout.printf ("%s %s\n", APP_NAME, Config.VERSION);
@@ -226,7 +334,7 @@ namespace Valdo.Main {
 
         /* List tempaltes when are no arguments provided */
         if (non_option_arguments.length == 0) {
-            list_templates ();
+            list_templates (option_argument_custom_directory_override);
             return 0;
         }
 
@@ -237,7 +345,7 @@ namespace Valdo.Main {
             return 1;
         }
 
-        if (initialize_project (non_option_arguments[0]))
+        if (initialize_project (non_option_arguments[0], option_argument_custom_directory_override))
             return 0;
         else
             return 1;

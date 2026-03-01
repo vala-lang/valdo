@@ -1,4 +1,16 @@
 namespace Config {
     const string TEMPLATES_DIR = "@DATA_DIR@";
     const string VERSION = "@VCS_TAG@";
+    const string CUSTOM_TEMPLATES_DIR_SUB_PATH = "/valdo/templates";
+    const string XDG_DATA_HOME = "XDG_DATA_HOME";
+    const string FALLBACK_CUSTOM_TEMPLATES_DIR = "/.local/share/valdo/templates";
+    const string MISSING_CUSTOM_TEMPLATES_MESSAGE = """Could not find custom templates.
+You can add custom templates in the following locations:
+- `$XDG_DATA_HOME/valdo/templates`
+- `$HOME/.local/share/valdo/templates`
+- The directory you specified when using the `--custom-dir` option.
+
+For more information, see: https://github.com/vala-lang/valdo#loading-custom-templates
+ 
+""";
 }
