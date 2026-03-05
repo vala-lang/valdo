@@ -1,0 +1,15 @@
+namespace Constants {
+    public const string APP_ID = "@APP_ID@";
+    public const string APP_PATH = "@APP_PATH@";
+    public const string APP_NAME = "@APP_NAME@";
+    public const string APP_TITLE = "@APP_TITLE@";
+    public const string APP_SUMMARY = "@APP_SUMMARY@";
+    public const string APP_VERSION = "@APP_VERSION@";
+    public const string APP_LICENSE_TYPE = "@APP_LICENSE_TYPE@";
+    public const string APP_DEVELOPER_NAME = "@APP_DEVELOPER_NAME@";
+    public const string APP_HOMEPAGE_URL = "@APP_HOMEPAGE_URL@";
+    public const string APP_BUG_TRACKER_URL = "@APP_BUG_TRACKER_URL@";
+
+    public const string GETTEXT_PACKAGE = "@GETTEXT_PACKAGE@";
+    public const string LOCALEDIR = "@LOCALEDIR@";
+}

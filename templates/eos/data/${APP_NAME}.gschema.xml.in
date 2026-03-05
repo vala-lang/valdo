@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="@APP_PATH@" id="@APP_ID@">
+    <key name="window-width" type="i">
+      <default>640</default>
+      <summary>Most recent window width</summary>
+      <description>Most recent window width</description>
+    </key>
+    <key name="window-height" type="i">
+      <default>480</default>
+      <summary>Most recent window height</summary>
+      <description>Most recent window height</description>
+    </key>
+    <key name="window-maximized" type="b">
+      <default>false</default>
+      <summary>Open window maximized.</summary>
+      <description>Whether the main window of the application should open maximized or not.</description>
+    </key>
+  </schema>
+</schemalist>
