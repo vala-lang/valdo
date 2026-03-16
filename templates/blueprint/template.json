@@ -1,0 +1,35 @@
+{
+    "description": "a starter libadwaita app with blueprint",
+    "variables": {
+        "APP_NAME": {
+            "auto": true,
+            "default": "/${PROJECT_NAME}/\\s+//"
+        },
+        "APP_ID": {
+            "summary": "application ID",
+            "pattern": "^\\w+(\\.\\w+)*$",
+            "default": "io.github.${USERNAME}.${APP_NAME}"
+        },
+        "APP_NAMESPACE": {
+            "summary": "application namespace",
+            "pattern": "[A-Z]\\w{2,}",
+            "default": "/${PROJECT_NAME}/\\s+//"
+        },
+        "APP_PATH": {
+            "auto": true,
+            "default": "/${APP_ID}/(\\.|^|$)/\\//"
+        }
+    },
+    "templates": [
+        "data/ui/window.blp",
+        "data/${APP_NAME}.gresource.xml",
+        "data/meson.build",
+        "src/core/application.vala",
+        "src/ui/main-window.vala",
+        "src/main.vala",
+        "src/meson.build",
+        ".editorconfig",
+        "meson.build",
+        "README.md"
+    ]
+}
