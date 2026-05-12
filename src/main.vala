@@ -187,8 +187,7 @@ namespace Valdo.Main {
      */
     void enumerate_templates (File templates_dir,
                               HashTable<string, string> templates,
-                              ref int max_template_name_len,
-                              bool error_on_fail = false) {
+                              ref int max_template_name_len) {
         try {
             var enumerator = templates_dir.enumerate_children (
                 FileAttribute.ID_FILE,
@@ -212,12 +211,9 @@ namespace Valdo.Main {
                     max_template_name_len = template_name.length;
             }
         } catch (Error e) {
-            string error_message = "Can't enumerate templates: %s\n\n";
-            if (error_on_fail) {
-                error (error_message, e.message);
-            } else {
-                debug (error_message, e.message);
-            }
+            const string error_message = "Can't enumerate templates: %s\n\n";
+            debug (error_message, e.message);
+            return;
         }
     }
 
@@ -267,7 +263,7 @@ namespace Valdo.Main {
 
         int max_template_name_len = 0;
 
-        enumerate_templates (templates_dir, templates, ref max_template_name_len, true);
+        enumerate_templates (templates_dir, templates, ref max_template_name_len);
         enumerate_templates (custom_templates_dir, custom_templates, ref max_template_name_len);
 
         if (templates.length != 0) {
