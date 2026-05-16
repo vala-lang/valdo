@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>@APP_ID@</id>
+  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>@APP_LICENSE_TYPE@</project_license>
+
+  <name>@APP_TITLE@</name>
+  <summary>@APP_SUMMARY@</summary>
+  <description>
+    <p>@APP_SUMMARY@</p>
+  </description>
+  
+  <url type="homepage">@APP_HOMEPAGE_URL@</url>
+  <url type="bugtracker">@APP_BUG_TRACKER_URL@</url>
+
+  <developer_name>@APP_DEVELOPER_NAME@</developer_name>
+
+  <content_rating type="oars-1.1"></content_rating>
+
+  <provides>
+    <binary>@APP_ID@</binary>
+  </provides>
+
+  <releases>
+    <!--
+    You need to add at least one release so that the GitHub CI Action can build your flatpak
+    For more infomation, see the AppStream documentation: 
+    https://freedesktop.org/software/appstream/docs/sect-Metadata-Releases.html
+    -->
+  </releases>
+</component>

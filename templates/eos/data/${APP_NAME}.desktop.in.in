@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=@APP_TITLE@
+Comment=@APP_SUMMARY@
+Categories=${APP_CATEGORIES}
+
+Icon=@APP_ID@
+Exec=@APP_ID@
+Terminal=false
